@@ -6,9 +6,7 @@ nouvelle partie ou de charger une partie en cours. Une partie en cours devra êt
 stockée dans un fichier texte.
 - Représente une grille de Tetris avec 10 colonnes et 15 lignes,
 - Fait apparaitre en haut de la grille un nouveau bloc de nombres
-Saé1.01/SAé1.02 Département Informatique S1A 2023-2024
-3
-Christel Dartigues-Pallez
+
 - Permet à un joueur de choisir dans quelle colonne placer le nouvel élément. La sélection
 de la colonne est laissée libre (utilisation des flèches ou utilisation du numéro de la
 colonne),
