@@ -6,7 +6,6 @@ nouvelle partie ou de charger une partie en cours. Une partie en cours devra êt
 stockée dans un fichier texte.
 - Représente une grille de Tetris avec 10 colonnes et 15 lignes,
 - Fait apparaitre en haut de la grille un nouveau bloc de nombres
-
 - Permet à un joueur de choisir dans quelle colonne placer le nouvel élément. La sélection
 de la colonne est laissée libre (utilisation des flèches ou utilisation du numéro de la
 colonne),
@@ -39,3 +38,22 @@ Param : signification des paramètres
 Traitrement : résumé succint de son traitement
 Retour : signification des valeurs retournées
 ```
+
+## 3. Cahier des Charges et Repartition des Taches :
+
+### 3.1 Cahier des Charges :
+- #### Menu Principal (Nouvelle Partie, Charger une Nouvelle Partie)
+- #### Reprensenter une grille (10 colonnes et 15 lignes pour le moment)
+- #### Faire apparaitre en haut de la grille un nouveau bloc de nombres (avec les nombres corespondant)
+- #### Commande pour que le joueur puissent deplacer les blocs (fleches ou nombre de la colonne)
+- #### Actualiser la grille et l'ajout et la suppression de chaque colonne et les changements de blocs si besoin
+- #### Sauvegarder la partie en cours dans un fichiers texte, et le formatter d'une manière correcte
+
+### 3.2 Repartition des Taches (l, f, s)
+- #### Menu Principal (Nouvelle Partie, Charger une Nouvelle Partie) -> (S)
+- #### Reprensenter une grille (10 colonnes et 15 lignes pour le moment) -> (F)
+- #### Faire apparaitre en haut de la grille un nouveau bloc de nombres (avec les nombres corespondant) -> (L)
+- #### Commande pour que le joueur puissent deplacer les blocs (fleches ou nombre de la colonne) -> (S)
+- #### Actualiser la grille et l'ajout et la suppression de chaque colonne et les changements de blocs si besoin -> (L)
+- #### Sauvegarder la partie en cours dans un fichiers texte, et le formatter d'une manière correcte -> (F)
+
