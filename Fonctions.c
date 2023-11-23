@@ -16,6 +16,30 @@
 // - Si non, affichage du menu principal avec les options : Nouvelle Partie, Quitter
 // - Fonction Recuperation partie en cours et affichage grille
 
+Fait par Sarah : 
+
+#include <stdio.h>
+#include <stdlib.h>
+
+///Menu
+
+int demanderInformation(char *message) {
+    int choix;
+    printf(message);
+    scanf("%i", &choix);
+    return choix;
+}
+
+void menu(){
+    int choix = demanderInformation("Bienvenue sur Tetris 2048\nMerci de selectionner un des choix suivant\n\n[0] Nouvelle Partie\n[1] Charger une Partie\n\n");
+    if (choix == 0) {
+        choix = demanderInformation("etes vous sur? si oui taper 0\n");
+    else if (choix != 1);
+        choix = demanderInformation("Veuillez choisir entre 0 et 1\n");
+    else 
+    /*(lancer la partie)*/
+    }
+}
 
 //==================================================================================================
 
