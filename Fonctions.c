@@ -16,10 +16,6 @@
 // - Si non, affichage du menu principal avec les options : Nouvelle Partie, Quitter
 // - Fonction Recuperation partie en cours et affichage grille
 
-Fait par Sarah : 
-
-#include <stdio.h>
-#include <stdlib.h>
 
 ///Menu
 
