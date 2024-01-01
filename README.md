@@ -82,7 +82,7 @@ Le projet tetris - 2048 est organisé en plusieurs parties,
 
 ### 5.3 - Planning :
 
-
+- 01/11/2023 : Debut du Projet
 - 01/12/2023 : Reunification des parties
 - 16/01/2024 : Dernier Test, Verification du code et de la documentation
 - 30/01/2024 : Rendu Final de la SAE-1 et Presentation Orales
