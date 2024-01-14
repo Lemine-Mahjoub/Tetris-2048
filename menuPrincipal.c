@@ -4,51 +4,81 @@
 
 #include <ncurses.h>
 
-int main() {
-    // Initialize ncurses
-    initscr();
-    noecho();
-    curs_set(0);
-    keypad(stdscr, TRUE); // Enable keyboard input
 
-    // Menu items
-    char *menu_items[] = {"Nouvelle Partie", "Charger Partie", "Quitter"};
-    int n_menu_items = sizeof(menu_items) / sizeof(menu_items[0]);
-    int current_row = 0;
 
-    while (1) {
-        // Clear screen and print menu
-        clear();
-        for (int i = 0; i < n_menu_items; ++i) {
-            if (i == current_row) {
-                attron(A_REVERSE); // Highlight selected item
-            }
-            mvprintw(i + 1, 1, "%s", menu_items[i]);
-            if (i == current_row) {
-                attroff(A_REVERSE);
-            }
-        }
+//===================================================================================================
 
-        // User input
-        int ch = getch();
+/*
+    Fonction : Menu Principal
+    Auteur : Lemine Mahjoub
+    Param : Aucun Paramètre
+    Traitements :
+        - Affichage du menu principal
+        - Choix de l'utilisateur entre les options :
+            - Nouvelle Partie
+            - Charger Partie
+            - Quitter
+    Retour : Aucun Retour
+*/
 
-        // Keyboard navigation
-        switch (ch) {
-            case KEY_UP:
-                if (current_row > 0) current_row--;
-                break;
-            case KEY_DOWN:
-                if (current_row < n_menu_items - 1) current_row++;
-                break;
-            case 10: // Enter key
-                mvprintw(n_menu_items + 2, 1, "Vous avez choisi '%s'", menu_items[current_row]);
-                refresh();
-                getch(); // Wait for another key press
-                goto end; // Break out of the loop
-        }
-    }
+void menuPrincipal() {
 
-end:
-    endwin(); // End ncurses mode
-    return 0;
 }
+
+//===================================================================================================
+
+
+
+//===================================================================================================
+
+/*
+    Fonction : Nouvelle Partie
+    Auteur : Lemine Mahjoub
+    Param : Aucun Paramètre
+    Traitements :
+        - Lancement d'une nouvelle partie
+    Retour : Aucun Retour
+*/
+
+void nouvellePartie() {
+
+}
+//===================================================================================================
+
+
+
+//===================================================================================================
+/*
+    Fonction : Charger Partie
+    Auteur : Lemine Mahjoub
+    Param : Aucun Paramètre
+    Traitements :
+        - Charge une partie a partir d'un fichier
+    Retour : Aucun Retour
+*/
+
+void chargerPartie() {
+
+}
+//===================================================================================================
+
+
+
+//===================================================================================================
+/*
+    Fonction : Quitter
+    Auteur : Lemine Mahjoub
+    Param : Aucun Paramètre
+    Traitements :
+        - Quitte le jeu
+    Retour : Aucun Retour
+*/
+
+void quitter() {
+    
+}
+
+//===================================================================================================
+
+
+

@@ -69,10 +69,8 @@ Le projet tetris - 2048 est organisé en plusieurs parties,
   - Sauvegarde de la partie
   - Quitter la partie
 - Gestion des fichiers
-  - Sauvegarde de la partie
-  - Lecture Fichier
+  - Sauvegarder Partie
   - Ecriture Fichier
-  - Replacer les blocs
 
 ### 5.2 - Répartition des tâches :
 
