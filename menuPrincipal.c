@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <ncurses.h>
-
+#include "bibliotheque.h"
+#include "gestionnaireFichier.c"
 
 
 //===================================================================================================
@@ -22,7 +22,31 @@
 */
 
 void menuPrincipal() {
-
+    int choix = 0;
+    initscr();
+    printw("Bienvenue sur Tetris - 2048\n");
+    printw("1. Nouvelle Partie\n");
+    printw("2. Charger Partie\n");
+    printw("3. Quitter\n");
+    printw("Choix : ");
+    refresh();
+    scanw("%d", &choix);
+    
+    switch (choix) {
+        case 1:
+            nouvellePartie();
+            break;
+        case 2:
+            chargerPartie();
+            break;
+        case 3:
+            quitter();
+            break;
+        default:
+            clear();
+            printw("Choix Invalide, Merci de bien vouloir reesayer\n\n\n");
+            menuPrincipal();
+    }
 }
 
 //===================================================================================================
@@ -41,7 +65,7 @@ void menuPrincipal() {
 */
 
 void nouvellePartie() {
-
+    printf("Nouvelle Partie\n");
 }
 //===================================================================================================
 
@@ -58,7 +82,22 @@ void nouvellePartie() {
 */
 
 void chargerPartie() {
-
+    char dossier[50] = "Sauvegarde/";
+    char nomFichier[50];
+    refresh();
+    printw("Charger Partie\n\n");
+    printw("Merci de bien vouloir entrer le nom du fichier a charger : ");
+    scanw("%s", nomFichier);
+    strcat(dossier, nomFichier);
+    printw("%s\n", dossier);
+    if (fichierExiste(dossier)) {
+        printw("Le fichier existe\n");
+    } else {
+        clear();
+        printw("Le fichier choisis n'existe pas, Merci de bien vouloir reesayer\n\n\n");
+        menuPrincipal();
+    }
+    refresh();
 }
 //===================================================================================================
 
@@ -75,10 +114,15 @@ void chargerPartie() {
 */
 
 void quitter() {
-    
+    printf("Quitter\n");
+    endwin();
 }
 
 //===================================================================================================
 
 
 
+int main() {
+    menuPrincipal();
+    return 0;
+}

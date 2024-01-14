@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <ncurses.h>
+#include "bibliotheque.h"
 
 
 
@@ -14,12 +16,37 @@
         - Initialise la grille a vide
     Retour : Aucun Retour
 
+    typedef struct {
+    int *tab[10];
+} colonne;
+
+typedef struct {
+    colonne *tab[15];
+} grille;
 */
 
-void grilleVide() {
+void grilleVide(grille *grille) {
+    for(int i = 0; i < 15; i++) {
+        colonne colonneVide;
+        for(int j = 0; j < 10; j++) {
+            colonneVide.tab[j] = 0;
+        }
+        grille->tab[i] = colonneVide;
+    }
 
 }
 
+
+int main() {
+    grille grille;
+    bloc nouveauBloc;
+    initscr();
+    grilleVide(&grille);
+    generationBloc(&nouveauBloc);
+    commandeUtilisateur(&grille, nouveauBloc);
+    affichageGrille(grille);
+    return 0;
+}
 //===================================================================================================
 
 
@@ -50,8 +77,20 @@ void grilleFichier() {
     Retour : Aucun Retour
 */
 
-void affichageGrille() {
+void affichageGrille(grille grille) {
+    initscr();
 
+    printw("Affichage Grille\n\n");
+    printw("0 1 2 3 4 5 6 7 8 9\n\n\n");
+    for(int i = 0; i < 15; i++) {
+        
+        for(int j = 0; j < 10; j++) {
+            printw("%d", grille.tab[i].tab[j]);
+            printw(" ");
+        }
+        printw("\n");
+    }
+    refresh();
 }
 
 //===================================================================================================
@@ -68,12 +107,22 @@ void affichageGrille() {
     Retour : Aucun Retour
 */
 
-void changementGrille() {
-
+void changementGrille(grille *grille, bloc bloc, int colonne) {
+    
+    int ligne = 0;
+    while(ligne < 15 && grille->tab[ligne].tab[colonne] == 0) {
+        ligne++;
+    }
+    
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            grille->tab[ligne - i - 1].tab[colonne + j] = bloc.tab[i][j];
+        }
+    }
+    
 }
 
 //===================================================================================================
-
 
 
 //===================================================================================================
@@ -87,8 +136,30 @@ void changementGrille() {
     Retour : Aucun Retour
 */
 
-void commandeUtilisateur() {
+void commandeUtilisateur(grille *grille, bloc bloc) {
+    char choixStr;
+    initscr();
+    printw("Que voulez vous faire ?\n");
+    printw("Placer un bloc : 0 1 2 3 4 5 6 7 8 9\n");
+    printw("Quitter sans sauvegarder : q\n");
+    printw("Quitter en sauvegardant : s\n");
+    printw("Votre choix : ");
+    scanw("%d", &choixStr);
+    refresh();
 
+    switch (choixStr) {
+        case 'q':
+            printw("Vous avez quitter sans sauvegarder\n");
+            break;
+        case 's':
+            printw("Vous avez quitter en sauvegardant\n");
+            break;
+        default:
+            int choixInt = choixStr;
+            printf("%i", choixInt);
+            changementGrille(grille, bloc, choixInt+1);
+            break;
+    }
 }
 
 //===================================================================================================
@@ -123,12 +194,79 @@ void verificationBloc() {
     Retour : Aucun Retour
 */
 
-void generationBloc() {
+#include <stdio.h>
+#include <stdlib.h>
 
+
+void generationBloc(bloc *nouveauBloc) {
+
+    srand(time(NULL));
+
+    int indexAleatoire = rand() % 4;
+    int valeurAutoriser[4] = {2, 4, 8, 16};
+    int valeur = valeurAutoriser[indexAleatoire];
+    int indexAleatoireForme = rand() % 6;
+
+    nouveauBloc->nombre = valeur;
+
+    // Initialiser le tableau avec des zéros
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            nouveauBloc->tab[i][j] = 0;
+        }
+    }
+
+    switch (indexAleatoireForme) {
+        case 0:
+            nouveauBloc->tab[1][1] = valeur;
+            nouveauBloc->tab[1][2] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            break;
+        case 1:
+            nouveauBloc->tab[1][0] = valeur;
+            nouveauBloc->tab[1][1] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            break;
+        case 2:
+            nouveauBloc->tab[1][1] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            nouveauBloc->tab[2][2] = valeur;
+            break;
+        case 3:
+            nouveauBloc->tab[1][1] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            nouveauBloc->tab[2][2] = valeur;
+            break;
+        case 4:
+            nouveauBloc->tab[0][1] = valeur;
+            nouveauBloc->tab[1][1] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            break;
+        case 5:
+            nouveauBloc->tab[2][2] = valeur;
+            nouveauBloc->tab[2][1] = valeur;
+            nouveauBloc->tab[2][0] = valeur;
+            break;
+    }
 }
 
 //===================================================================================================
 
+
+void affichageBloc(bloc bloc) {
+    initscr();
+
+    printw("Affichage Bloc\n\n");
+    for(int i = 0; i < 3; i++) {
+        
+        for(int j = 0; j < 3; j++) {
+            printw("%d", bloc.tab[i][j]);
+            printw(" ");
+        }
+        printw("\n");
+    }
+    refresh();
+}
 
 
 //===================================================================================================

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <ncurses.h>
 
 
 
@@ -38,4 +38,28 @@ void chargerFichier() {
 
 }
 
+//===================================================================================================
+
+
+
+//===================================================================================================
+/*
+    Fonction : fichier existe
+    Auteur : Lemine Mahjoub
+    Param : Aucun Paramètre
+    Traitements :
+        - Verifie si un fichier existe
+    Retour : Aucun Retour
+*/
+
+int fichierExiste(char nom[50]) {
+    FILE *fichier;
+    fichier = fopen(nom, "r");
+
+    if (fichier != NULL) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 //===================================================================================================
