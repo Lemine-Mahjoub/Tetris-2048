@@ -57,6 +57,7 @@ Le projet tetris - 2048 est organisé en plusieurs parties,
 - Le Menu Principal
   - Nouvelle Partie
   - Charger Partie
+  - Règles du jeu
   - Quitter la partie
 - Le Jeu
   - Affichage de la grille
