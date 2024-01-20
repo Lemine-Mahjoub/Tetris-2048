@@ -198,8 +198,8 @@ void transformationBloc(grille *g){
 
 }
 
-int main() {
-    
+
+void jeu(){
     grille g;
     bloc bloc;
     grilleVide(&g);
@@ -212,6 +212,9 @@ int main() {
         transformationBloc(&g);
         afficherGrille(g);
     }
+}
+int main() {
+    jeu();
 
     return 0;
 }

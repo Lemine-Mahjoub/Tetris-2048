@@ -118,7 +118,7 @@ void menuPrincipal() {
             quitter();
         }
     }
-
+    
 
     endwin();
 }
