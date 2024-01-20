@@ -1,341 +1,217 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <ncurses.h>
+#include <time.h>
 #include "bibliotheque.h"
+#include "gestionnaireFichier.c"
 
 
-
-//===================================================================================================
-/*
-    Fonction : GrilleVide
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Initialise la grille a vide
-    Retour : Aucun Retour
-
-    typedef struct {
-    int *tab[10];
-} colonne;
-
-typedef struct {
-    colonne *tab[15];
-} grille;
-*/
-
-void grilleVide(grille *grille) {
-    for(int i = 0; i < 15; i++) {
-        colonne colonneVide;
-        for(int j = 0; j < 10; j++) {
-            colonneVide.tab[j] = 0;
+void grilleVide(grille *g){
+    for(int i = 0; i < 15; i++){
+        for(int j = 0; j < 10; j++){
+            g->tab[i].tab[j]= 0;
         }
-        grille->tab[i] = colonneVide;
     }
-
 }
 
-
-int main() {
-    grille grille;
-    bloc nouveauBloc;
+void afficherGrille(grille g){
     initscr();
-    grilleVide(&grille);
-    generationBloc(&nouveauBloc);
-    commandeUtilisateur(&grille, nouveauBloc);
-    affichageGrille(grille);
-    return 0;
-}
-//===================================================================================================
+    raw();
+    keypad(stdscr, TRUE);
+    noecho();
+    curs_set(0);
+    int max_x, max_y;
+    getmaxyx(stdscr, max_y, max_x);
+    int center_x = (max_x) / 2;
 
-
-
-//===================================================================================================
-/*
-    Fonction : GrilleFichier
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Initialise une Grille avec un fichier
-    Retour : Aucun Retour
-*/
-
-void grilleFichier() {
-
-}
-
-
-
-//===================================================================================================
-/*
-    Fonction : Affichage Grille
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Affichage du tableau representant la grille
-    Retour : Aucun Retour
-*/
-
-void affichageGrille(grille grille) {
-    initscr();
-
-    printw("Affichage Grille\n\n");
-    printw("0 1 2 3 4 5 6 7 8 9\n\n\n");
-    for(int i = 0; i < 15; i++) {
+    for(int i = 0; i < 10; i++){
+        start_color();
+        init_pair(1, COLOR_RED, COLOR_BLACK);
+        attron(COLOR_PAIR(1));
+        mvprintw(2, center_x-25+i*6,"x-----x");
+        mvprintw(3, center_x-25+i*6,"|  %d  |", i);
+        mvprintw(4, center_x-25+i*6,"x-----x");
+        attroff(COLOR_PAIR(1));
+        mvprintw(5, center_x-25+i*6,"     ", i);
+        mvprintw(6, center_x-25+i*6,"     ");
         
-        for(int j = 0; j < 10; j++) {
-            printw("%d", grille.tab[i].tab[j]);
-            printw(" ");
+    }
+    int k = 7;
+    for(int i = 0; i < 15; i++){
+        for(int j = 0; j < 10; j++){
+            start_color();
+            init_pair(1, COLOR_RED, COLOR_BLACK);
+            init_pair(2, COLOR_GREEN, COLOR_BLACK);
+            init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+            init_pair(4, COLOR_BLUE, COLOR_BLACK);
+            init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+            init_pair(6, COLOR_CYAN, COLOR_BLACK);
+
+            if (g.tab[i].tab[j] < 10){
+
+                mvprintw(k, center_x-25+j*6,"x-----x");
+                mvprintw(k+1, center_x-25+j*6,"|  %i  |", g.tab[i].tab[j]);
+                mvprintw(k+2, center_x-25+j*6,"x-----x");
+            }
+            else if(g.tab[i].tab[j] < 100){
+                mvprintw(k, center_x-25+j*6,"x-----x");
+                mvprintw(k+1, center_x-25+j*6,"|  %i |", g.tab[i].tab[j]);
+                mvprintw(k+2, center_x-25+j*6,"x-----x");
+            }
+            else if(g.tab[i].tab[j] < 1000){
+                mvprintw(k, center_x-25+j*6,"x-----x");
+                mvprintw(k+1, center_x-25+j*6,"| %i |", g.tab[i].tab[j]);
+                mvprintw(k+2, center_x-25+j*6,"x-----x");
+            }
+            else{
+                mvprintw(k, center_x-25+j*6,"x-----x");
+                mvprintw(k+1, center_x-25+j*6,"|%i |", g.tab[i].tab[j]);
+                mvprintw(k+2, center_x-25+j*6,"x-----x");
+            }
         }
-        printw("\n");
+        
+        mvprintw(k+10, center_x-25+10*6,"\n");
+        k = k + 2;
     }
-    refresh();
+    getch();
 }
 
-//===================================================================================================
-
-
-
-//===================================================================================================
-/*
-    Fonction : ChangementGrille
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Permet de faire des changements sur la grille (ajout de bloc / modification de bloc)
-    Retour : Aucun Retour
-*/
-
-void changementGrille(grille *grille, bloc bloc, int colonne) {
-    
-    int ligne = 0;
-    while(ligne < 15 && grille->tab[ligne].tab[colonne] == 0) {
-        ligne++;
-    }
-    
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            grille->tab[ligne - i - 1].tab[colonne + j] = bloc.tab[i][j];
-        }
-    }
-    
-}
-
-//===================================================================================================
-
-
-//===================================================================================================
-/*
-    Fonction : commandeUtilisateur
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Permet a l'utilisateur de saisir un nombre entre 1 et 9 pour choisir la grille
-        - Permet a l'utilisateur de quitter sans sauvegarder en appuyant sur q ou quitter en sauvegardant en appuyant sur s
-    Retour : Aucun Retour
-*/
-
-void commandeUtilisateur(grille *grille, bloc bloc) {
-    char choixStr;
-    initscr();
-    printw("Que voulez vous faire ?\n");
-    printw("Placer un bloc : 0 1 2 3 4 5 6 7 8 9\n");
-    printw("Quitter sans sauvegarder : q\n");
-    printw("Quitter en sauvegardant : s\n");
-    printw("Votre choix : ");
-    scanw("%d", &choixStr);
-    refresh();
-
-    switch (choixStr) {
-        case 'q':
-            printw("Vous avez quitter sans sauvegarder\n");
-            break;
-        case 's':
-            printw("Vous avez quitter en sauvegardant\n");
-            break;
-        default:
-            int choixInt = choixStr;
-            printf("%i", choixInt);
-            changementGrille(grille, bloc, choixInt+1);
-            break;
-    }
-}
-
-//===================================================================================================
-
-
-
-//===================================================================================================
-/*
-    Fonction : verificationGrille
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Verifie si la grille est correcte
-    Retour : Aucun Retour
-*/
-
-void verificationBloc() {
-
-}
-
-//===================================================================================================
-
-
-
-//===================================================================================================
-/*
-    Fonction : generationBloc
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Genere un bloc aleatoirement
-    Retour : Aucun Retour
-*/
-
-#include <stdio.h>
-#include <stdlib.h>
-
-
-void generationBloc(bloc *nouveauBloc) {
+void generationBloc(bloc *nouveauBloc){
 
     srand(time(NULL));
 
-    int indexAleatoire = rand() % 4;
-    int valeurAutoriser[4] = {2, 4, 8, 16};
-    int valeur = valeurAutoriser[indexAleatoire];
-    int indexAleatoireForme = rand() % 6;
+    int tableauValeur[4] = {2, 4, 8, 16};
+    int valeur = rand()%4;
+    nouveauBloc->nombre = tableauValeur[valeur];
 
-    nouveauBloc->nombre = valeur;
-
-    // Initialiser le tableau avec des zéros
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
+    for(int i = 0; i < 2; i++){
+        for (int j = 0; j < 2; j++){
             nouveauBloc->tab[i][j] = 0;
         }
     }
 
-    switch (indexAleatoireForme) {
+    int forme = rand()%4;
+    switch (forme) {
         case 0:
-            nouveauBloc->tab[1][1] = valeur;
-            nouveauBloc->tab[1][2] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
+            nouveauBloc->tab[0][0] = tableauValeur[valeur];  // **
+            nouveauBloc->tab[0][1] = tableauValeur[valeur];  // *
+            nouveauBloc->tab[1][0] = tableauValeur[valeur];
             break;
         case 1:
-            nouveauBloc->tab[1][0] = valeur;
-            nouveauBloc->tab[1][1] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
+            nouveauBloc->tab[0][0] = tableauValeur[valeur];  // ** 
+            nouveauBloc->tab[0][1] = tableauValeur[valeur];  //  *
+            nouveauBloc->tab[1][1] = tableauValeur[valeur];
             break;
         case 2:
-            nouveauBloc->tab[1][1] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
-            nouveauBloc->tab[2][2] = valeur;
+            nouveauBloc->tab[0][0] = tableauValeur[valeur];  // *
+            nouveauBloc->tab[1][0] = tableauValeur[valeur];  // **
+            nouveauBloc->tab[1][1] = tableauValeur[valeur];
             break;
         case 3:
-            nouveauBloc->tab[1][1] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
-            nouveauBloc->tab[2][2] = valeur;
+            nouveauBloc->tab[0][1] = tableauValeur[valeur]; //  *
+            nouveauBloc->tab[1][0] = tableauValeur[valeur]; // **
+            nouveauBloc->tab[1][1] = tableauValeur[valeur];
             break;
-        case 4:
-            nouveauBloc->tab[0][1] = valeur;
-            nouveauBloc->tab[1][1] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
-            break;
-        case 5:
-            nouveauBloc->tab[2][2] = valeur;
-            nouveauBloc->tab[2][1] = valeur;
-            nouveauBloc->tab[2][0] = valeur;
-            break;
+        
     }
 }
 
-//===================================================================================================
+void placeBloc(grille *grille, bloc bloc, int colonne) {
+    
+    int ligne = 0;
+    if(colonne == 9) {
+        colonne = 8;
+    }
+    if (bloc.tab[1][0] == 0) {
+        while(ligne < 13 && grille->tab[ligne+1].tab[colonne] == 0  && grille->tab[ligne+2].tab[colonne+1] == 0) {
+            ligne++;
+        }
+    } else if (bloc.tab[1][1] == 0) {
+        while(ligne < 13 && grille->tab[ligne+2].tab[colonne] == 0  && grille->tab[ligne+1].tab[colonne+1] == 0) {
+            ligne++;
+        }
+    } else {
+        while(ligne < 13 && grille->tab[ligne+2].tab[colonne] == 0  && grille->tab[ligne+2].tab[colonne+1] == 0) {
+            ligne++;
+        }
+    }
 
+
+    for(int i = 0; i < 2; i++) {
+        for(int j = 0; j < 2; j++){
+            if(bloc.tab[i][j] != 0){
+                grille->tab[ligne+i].tab[colonne+j] = bloc.tab[i][j];
+            }
+            
+        }
+    }
+    
+}
 
 void affichageBloc(bloc bloc) {
     initscr();
 
-    printw("Affichage Bloc\n\n");
-    for(int i = 0; i < 3; i++) {
+
+    for(int i = 0; i < 2; i++) {
         
-        for(int j = 0; j < 3; j++) {
-            printw("%d", bloc.tab[i][j]);
-            printw(" ");
+        for(int j = 0; j < 2; j++) {
+            mvprintw(i*4,j*4,"%d", bloc.tab[i][j]);
+        
         }
         printw("\n");
     }
     refresh();
+    getch();
 }
 
+int commandeUtilisateur(){
+    initscr();
+    clear();
+    int commande;
 
-//===================================================================================================
-/*
-    Fonction : verificationVictoire
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Verifie si un bloc est a 2048
-    Retour : Aucun Retour
-*/
-
-void verificationVictoire() {
-
+    mvprintw(0, 0, "Commande : ");
+    commande = getch();
+    clear();
+    return commande - '0';
+    
 }
 
-//===================================================================================================
-
-
-
-//===================================================================================================
-/*
-    Fonction : verificationDefaite
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Verifie si la grille est pleine
-    Retour : Aucun Retour
-*/
-
-void verificationDefaite() {
-
-}
-
-//===================================================================================================
-
-
-
-//===================================================================================================
-/*
-    Fonction : Victoire
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Ecran de victoire
-    Retour : Aucun Retour
-*/
-
-void victoire() {
+void transformationBloc(grille *g){
+    //  Dès que 3 cases minimum avec le même nombre 
+    //se touchent, elle disparaissent pour être remplacées par la puissance de deux suivante : trois 
+    //cases ou plus avec un 2 sont remplacées par une case avec un 4, trois cases ou plus avec un 4 
+    //sont remplacées par une case avec un 8, etc. La nouvelle case qui va remplacer les ancienne 
+    //doit être placée dans la case le plus en bas à gauche possible.
+    int valeur = 0;
+    for(int i = 0; i < 15; i++){
+        for(int j = 0; j < 10; j++){
+            if(g->tab[i].tab[j] == g->tab[i].tab[j+1] && g->tab[i].tab[j] == g->tab[i].tab[j+2] && g->tab[i].tab[j] != 0){
+                valeur = g->tab[i].tab[j];
+                g->tab[i].tab[j] = 0;
+                g->tab[i].tab[j+1] = 0;
+                g->tab[i].tab[j+2] = 0;
+                g->tab[i].tab[j+3] = valeur*2;
+            }
+        }
+    }
 
 }
 
-//===================================================================================================
+int main() {
+    
+    grille g;
+    bloc bloc;
+    grilleVide(&g);
+    for(int i = 0; i < 15; i++){
+        generationBloc(&bloc);
+        
+        int c = commandeUtilisateur();
 
+        placeBloc(&g, bloc, c);
+        transformationBloc(&g);
+        afficherGrille(g);
+    }
 
-
-//===================================================================================================
-
-/*
-    Fonction : Defaite
-    Auteur : Lemine Mahjoub
-    Param : Aucun Paramètre
-    Traitements :
-        - Ecran de defaite
-    Retour : Aucun Retour
-*/
-
-void defaite() {
-
+    return 0;
 }
-
-//===================================================================================================
