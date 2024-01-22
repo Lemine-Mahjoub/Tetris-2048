@@ -37,7 +37,7 @@ void afficherGrille(grille g){
         mvprintw(6, center_x-25+i*6,"     ");
         
     }
-    int k = 7;
+    int k = 10;
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             start_color();
@@ -74,7 +74,7 @@ void afficherGrille(grille g){
         mvprintw(k+10, center_x-25+10*6,"\n");
         k = k + 2;
     }
-    getch();
+    
 }
 
 void generationBloc(bloc *nouveauBloc){
@@ -156,23 +156,32 @@ void affichageBloc(bloc bloc) {
     for(int i = 0; i < 2; i++) {
         
         for(int j = 0; j < 2; j++) {
-            mvprintw(i*4,j*4,"%d", bloc.tab[i][j]);
+            mvprintw(3, 2,"placer le bloc : ");
+            mvprintw(5+i*2,5+j*2,"%d", bloc.tab[i][j]);
         
         }
         printw("\n");
     }
     refresh();
-    getch();
+    
 }
 
 int commandeUtilisateur(){
     initscr();
-    clear();
+    echo();
     int commande;
 
-    mvprintw(0, 0, "Commande : ");
+    mvprintw(2, 2, "Commande : ");
     commande = getch();
     clear();
+    if(commande == 'q'){
+        endwin();
+        exit(0);
+    } else if(commande - '0' < 0 || commande - '0' > 9){
+        printw("Commande invalide");
+        commandeUtilisateur();
+    }
+
     return commande - '0';
     
 }
@@ -184,17 +193,18 @@ void transformationBloc(grille *g){
     //sont remplacées par une case avec un 8, etc. La nouvelle case qui va remplacer les ancienne 
     //doit être placée dans la case le plus en bas à gauche possible.
     int valeur = 0;
-    for(int i = 0; i < 15; i++){
-        for(int j = 0; j < 10; j++){
-            if(g->tab[i].tab[j] == g->tab[i].tab[j+1] && g->tab[i].tab[j] == g->tab[i].tab[j+2] && g->tab[i].tab[j] != 0){
+    for(int i = 14; i >= 0; i--){
+        for(int j = 14; j >= 0; j--){
+            if(g->tab[i].tab[j] == g->tab[i].tab[j+1] && g->tab[i].tab[j] == g->tab[i-1].tab[j] && g->tab[i].tab[j] == g->tab[i-1].tab[j+1] &&g->tab[i].tab[j] != 0){
                 valeur = g->tab[i].tab[j];
-                g->tab[i].tab[j] = 0;
+                g->tab[i].tab[j] = valeur*2;
                 g->tab[i].tab[j+1] = 0;
-                g->tab[i].tab[j+2] = 0;
-                g->tab[i].tab[j+3] = valeur*2;
+                g->tab[i-1].tab[j] = 0;
+                g->tab[i-1].tab[j+1] = 0;
             }
         }
     }
+
 
 }
 
@@ -204,13 +214,12 @@ void jeu(){
     bloc bloc;
     grilleVide(&g);
     for(int i = 0; i < 15; i++){
+        afficherGrille(g);
         generationBloc(&bloc);
-        
+        affichageBloc(bloc);
         int c = commandeUtilisateur();
-
         placeBloc(&g, bloc, c);
         transformationBloc(&g);
-        afficherGrille(g);
     }
 }
 int main() {
