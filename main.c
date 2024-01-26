@@ -506,8 +506,11 @@ void conditionVictoire(grille g){
 }
 
 void conditionDefaite(grille g){
-    //defaite si la grille est remplie
-    
+    for(int i = 0; i < 10; i++){
+        if(g.ligne[1].colonne[i] != 0){
+            defaite();
+        }
+    }
 }
 
 void victoire(){
@@ -575,14 +578,16 @@ void jeu(grille *g){
 
     bloc bloc;
     generationBloc(&bloc); 
+    affichage(*g, bloc); 
     while(estplacer(*g, bloc)){ 
-        affichage(*g, bloc); 
+        
         commandeUtilisateur(&bloc, g); 
         placerBloc(g, bloc); 
+        affichage(*g, bloc); 
     }
     changementBloc(g, &bloc); 
     conditionVictoire(*g); 
-    //conditionDefaite(*g);
+    conditionDefaite(*g);
 
     jeu(g);
 
