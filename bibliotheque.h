@@ -8,6 +8,8 @@ typedef struct {
 } grille;
 
 typedef struct {
+    int x;
+    int y;
     int nombre;
     int tab[2][2];
 } bloc;
@@ -33,7 +35,9 @@ void affichageCommande();
 void jeu(grille *g);
 
 
+void placerBloc(grille *g, bloc b);
+
 void conditionVictoire(grille g);
-void conditionDefaite(bloc bloc, grille g);
+void conditionDefaite(grille g);
 void victoire();
 void defaite();

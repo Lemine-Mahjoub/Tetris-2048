@@ -279,6 +279,9 @@ void generationBloc(bloc *nouveauBloc){
         }
     }
 
+    nouveauBloc->x = 4;
+    nouveauBloc->y = 0;
+
     int forme = rand()%4;
     switch (forme) {
         case 0:
@@ -416,38 +419,80 @@ void afficherGrille(grille g){
     }
 }
 
-void bloctoucherien()
+
 
 void commandeUtilisateur(bloc *b, grille *g){
-    while(bloctoucherien){
-        int choix = getch();
+
+    int choix = getch();
+    if(b->tab[0][0] != 0)
+        g->ligne[b->y].colonne[b->x] = 0;
+    if(b->tab[0][1] != 0)
+        g->ligne[b->y].colonne[b->x+1] = 0;
+    if(b->tab[1][0] != 0)
+        g->ligne[b->y+1].colonne[b->x] = 0;
+    if(b->tab[1][1] != 0)
+        g->ligne[b->y+1].colonne[b->x+1] = 0;
+    switch (choix) {
 
 
-        switch (choix) {
-            case KEY_DOWN:
+        case KEY_DOWN:
+            if(b->y <= 12){
+                if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y+2].colonne[b->x] != 0 && g->ligne[b->y+2].colonne[b->x] == 0){
+                    b->y = b->y + 1;
+                }
+                else if(b->tab[1][0] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x+1] == 0)){
+                    b->y = b->y + 1;
+                }
+                else if(b->tab[1][1] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x] == 0)){
+                    b->y = b->y + 1;
+                }
                 
-                break;
-            case KEY_LEFT:
-
-                break;
-            case KEY_RIGHT:
-
-                break;
-            case 'q':
-                quitter();
-                break;
-            case 's':
-                sauvegarderGrille(*g);
-                quitter();
-                break;
-            default:
-                break;
-        }
+            }
+            
+            break;
+        case KEY_LEFT:
+            if(b->x >= 1){
+                if(b->tab[0][0] != 0 && b->tab[1][0] != 0 && g->ligne[b->y].colonne[b->x-1] == 0 && g->ligne[b->y+1].colonne[b->x-1] == 0){
+                    b->x = b->x - 1;
+                }
+                else if(b->tab[0][0] != 0 && g->ligne[b->y].colonne[b->x-1] == 0){
+                    b->x = b->x - 1;
+                }
+                else if(b->tab[0][1] != 0 && g->ligne[b->y+1].colonne[b->x-1] == 0){
+                    b->x = b->x - 1;
+                }
+            }
+            break;
+        case KEY_RIGHT:
+            if(b->x < 8){
+                if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y].colonne[b->x+2] == 0 && g->ligne[b->y+1].colonne[b->x+2] == 0){
+                    b->x = b->x + 1;
+                }
+                else if(b->tab[1][0] != 0 && g->ligne[b->y].colonne[b->x+2] == 0){
+                    b->x = b->x + 1;
+                }
+                else if(b->tab[1][1] != 0 && g->ligne[b->y+1].colonne[b->x+2] == 0){
+                    b->x = b->x + 1;
+                }
+            }
+            break;
+        case 'q':
+            quitter();
+            break;
+        case 's':
+            sauvegarderGrille(*g);
+            quitter();
+            break;
+        default:
+            break;
     }
+    
     
 }
 
-
+void changementBloc(grille *g, bloc *b){
+    
+}
 
 void conditionVictoire(grille g){
     for(int i = 0; i < 15; i++){
@@ -460,11 +505,9 @@ void conditionVictoire(grille g){
 
 }
 
-void conditionDefaite(bloc bloc, grille g){
+void conditionDefaite(grille g){
+    //defaite si la grille est remplie
     
-    // A faire : Condition de defaite
-    // Si on ne peut plus placer de bloc
-    defaite();
 }
 
 void victoire(){
@@ -504,21 +547,44 @@ void defaite(){
 }
 
 
+int estplacer(grille g, bloc b){
+    if(b.y + 2 > 14)
+        return 0;
+    if(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0))
+        return 0;
+    if (b.tab[1][0] != 0 && b.tab[1][1] == 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+1].colonne[b.x+1] != 0))
+        return 0;
+    if (b.tab[1][0] == 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x+1] != 0 || g.ligne[b.y+1].colonne[b.x] != 0))
+        return 0;
+
+    return 1;
+}
+
+void placerBloc(grille *g, bloc b){
+    if(g->ligne[b.y].colonne[b.x] == 0)
+        g->ligne[b.y].colonne[b.x] = b.tab[0][0];
+    if(g->ligne[b.y].colonne[b.x+1] == 0)
+        g->ligne[b.y].colonne[b.x+1] = b.tab[0][1];
+    if(g->ligne[b.y+1].colonne[b.x] == 0)
+        g->ligne[b.y+1].colonne[b.x] = b.tab[1][0];
+    if(g->ligne[b.y+1].colonne[b.x+1] == 0)
+        g->ligne[b.y+1].colonne[b.x+1] = b.tab[1][1];
+}
+
 void jeu(grille *g){
+
     bloc bloc;
-    generationBloc(&bloc); // Valide
-    while(estplacer(bloc, g)){ // a faire
-            
-        affichage(*g, bloc); // Valide
-        int commande = commandeUtilisateur(&bloc, g); // Refacto
-        placerBloc(bloc, g, commande); // Refact
+    generationBloc(&bloc); 
+    while(estplacer(*g, bloc)){ 
+        affichage(*g, bloc); 
+        commandeUtilisateur(&bloc, g); 
+        placerBloc(g, bloc); 
     }
-    changementBloc(&bloc, g); // Refacto
-    conditionVictoire(*g); // Valide
-    conditionDefaite(bloc, *g); // a finir
+    changementBloc(g, &bloc); 
+    conditionVictoire(*g); 
+    //conditionDefaite(*g);
+
     jeu(g);
-
-
 
 }
 
