@@ -35,6 +35,10 @@ void affichageCommande();
 void jeu(grille *g);
 
 
+bloc bonBloc(grille g, int i, int j);
+int blocAutour(grille g, int x, int y, int pasverif, int compteur);
+void deforestageGrille(grille *g, int i, int j);
+
 void placerBloc(grille *g, bloc b);
 
 void conditionVictoire(grille g);

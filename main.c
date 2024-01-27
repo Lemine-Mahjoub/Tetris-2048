@@ -491,7 +491,94 @@ void commandeUtilisateur(bloc *b, grille *g){
 }
 
 void changementBloc(grille *g, bloc *b){
-    
+    // Les blocs ce transforme, si 4 chiffre de meme valeur sont cote a cote, ils fusionnent, cela supprime tout les nombres du meme chiffre 
+    // et les remplace par un nombre superieur tout en bas a gauche et supprime les autres et les met a 0
+    // on va verifier pour chaque piece du bloc tant que il y'a un bloc a cote de lui a gauche droite ou en bas on va le transformer  en 0
+    for(int i = 0; i < 15; i++){
+        for(int j = 0; j < 10; j++){
+            if(g->ligne[i].colonne[j] != 0 && i != 14 && j != 9){
+                int compteur = blocAutour(*g, i, j, 0, 0);
+                int valeur = g->ligne[i].colonne[j]; 
+                if(compteur >= 3){
+                    bloc b = bonBloc(*g, i, j);
+                    int x = b.x;
+                    int y = b.y;
+                    deforestageGrille(g, x, y);
+                    g->ligne[x].colonne[y] = valeur*2;
+                }
+            }
+        }
+    }
+}
+
+
+int blocAutour(grille g, int x, int y, int pasverif, int compteur){
+    // 1 = haut
+    // 2 = bas
+    // 3 = gauche
+    // 4 = droite
+    if(x+1 >= 14 || y+1 >= 9 || x-1 <= 0 || y-1 <= 0 || compteur >= 3)
+        return compteur;
+
+    if(pasverif != 1 && g.ligne[x].colonne[y] == g.ligne[x+1].colonne[y])
+        blocAutour(g, x+1, y, 2, compteur+1);
+
+
+    if(pasverif != 2 && g.ligne[x].colonne[y] == g.ligne[x-1].colonne[y])
+        blocAutour(g, x-1, y, 1, compteur+1);
+
+    if(pasverif != 3 && g.ligne[x].colonne[y] == g.ligne[x].colonne[y+1])
+        blocAutour(g, x, y+1, 4, compteur+1);
+
+    if(pasverif != 4 && g.ligne[x].colonne[y] == g.ligne[x].colonne[y-1])
+        blocAutour(g, x, y-1, 3, compteur+1);
+
+
+
+    return compteur;
+
+
+}
+
+
+bloc bonBloc(grille g, int i, int j){
+    // le bon bloc est le bloc coller le plus en bas a gauche ayant les meme valeur
+    int x, y;
+    x = i;
+    y = j;
+    while(g.ligne[i].colonne[j] == g.ligne[i+1].colonne[j]){
+        i++;
+    }
+    while(g.ligne[i].colonne[j] == g.ligne[i].colonne[j-1]){
+        j--;
+    }
+
+    x = i;
+    y = j;
+    bloc b;
+    b.x = i;
+    b.y = j;
+    return b;
+}
+
+void deforestageGrille(grille *g, int i, int j){
+    // On est tout en bas a gauche, on souhaite vraiment detruire tout les bloc possible ayant la meme valeur que ce bloc
+    // On va donc partir de ce bloc et detruire tout les bloc ayant la meme valeur que ce bloc
+    int valeur = g->ligne[i].colonne[j];
+    g->ligne[i].colonne[j] = 0;
+    if (g->ligne[i].colonne[j+1] == valeur){
+        deforestageGrille(g, i, j+1);
+    }
+    if (g->ligne[i].colonne[j-1] == valeur){
+        deforestageGrille(g, i, j-1);
+    }
+    if (g->ligne[i+1].colonne[j] == valeur){
+        deforestageGrille(g, i+1, j);
+    }
+    if (g->ligne[i-1].colonne[j] == valeur){
+        deforestageGrille(g, i-1, j);
+    }
+
 }
 
 void conditionVictoire(grille g){
@@ -564,6 +651,7 @@ int estplacer(grille g, bloc b){
 }
 
 void placerBloc(grille *g, bloc b){
+
     if(g->ligne[b.y].colonne[b.x] == 0)
         g->ligne[b.y].colonne[b.x] = b.tab[0][0];
     if(g->ligne[b.y].colonne[b.x+1] == 0)
