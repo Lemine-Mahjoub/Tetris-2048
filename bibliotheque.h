@@ -36,9 +36,9 @@ void jeu(grille *g);
 
 
 bloc bonBloc(grille g, int i, int j);
-int blocAutour(grille g, int x, int y, int pasverif, int compteur);
+int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur);
 void deforestageGrille(grille *g, int i, int j);
-
+void graviteGrille(grille *g, int x, int y);
 void placerBloc(grille *g, bloc b);
 
 void conditionVictoire(grille g);

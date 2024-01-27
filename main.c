@@ -386,9 +386,10 @@ void afficherGrille(grille g){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             int valeur = g.ligne[i].colonne[j];
+            start_color();
             if(valeur != 0){
-                attron(COLOR_PAIR(valeur % 6 + 1));
-            }            
+                attron(COLOR_PAIR(2));
+            }
             if (valeur < 10){
                 mvprintw(k, center_x-25+j*6,"x-----x");
                 mvprintw(k+1, center_x-25+j*6,"|  %i  |", valeur);
@@ -410,7 +411,7 @@ void afficherGrille(grille g){
                 mvprintw(k+2, center_x-25+j*6,"x-----x");
             }
             if(valeur != 0){
-                attroff(COLOR_PAIR(valeur % 6 + 1));
+                attroff(COLOR_PAIR(2));
             } 
         }
         
@@ -452,7 +453,7 @@ void commandeUtilisateur(bloc *b, grille *g){
             break;
         case KEY_LEFT:
             if(b->x >= 1){
-                if(b->tab[0][0] != 0 && b->tab[1][0] != 0 && g->ligne[b->y].colonne[b->x-1] == 0 && g->ligne[b->y+1].colonne[b->x-1] == 0){
+                if(b->tab[0][0] != 0 && b->tab[1][0] != 0 && g->ligne[b->y].colonne[b->x-1] == 0 && g->ligne[b->y+1].colonne[b->x-1] == 0 ){
                     b->x = b->x - 1;
                 }
                 else if(b->tab[0][0] != 0 && g->ligne[b->y].colonne[b->x-1] == 0){
@@ -465,7 +466,7 @@ void commandeUtilisateur(bloc *b, grille *g){
             break;
         case KEY_RIGHT:
             if(b->x < 8){
-                if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y].colonne[b->x+2] == 0 && g->ligne[b->y+1].colonne[b->x+2] == 0){
+                if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y].colonne[b->x+1] == 0 && g->ligne[b->y+1].colonne[b->x+1] == 0){
                     b->x = b->x + 1;
                 }
                 else if(b->tab[1][0] != 0 && g->ligne[b->y].colonne[b->x+2] == 0){
@@ -497,47 +498,50 @@ void changementBloc(grille *g, bloc *b){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             if(g->ligne[i].colonne[j] != 0 && i != 14 && j != 9){
-                int compteur = blocAutour(*g, i, j, 0, 0);
                 int valeur = g->ligne[i].colonne[j]; 
-                if(compteur >= 3){
+                int compteur = 1 + blocAutour(*g, i, j, 0, 0, valeur);
+                
+                if(compteur >= 4){
                     bloc b = bonBloc(*g, i, j);
                     int x = b.x;
                     int y = b.y;
                     deforestageGrille(g, x, y);
                     g->ligne[x].colonne[y] = valeur*2;
+                    graviteGrille(g, x, y);
                 }
             }
         }
     }
 }
 
+void graviteGrille(grille *g, int x, int y){
+    // on fait descendre un bloc solitaire tout en bas 
+    if(g->ligne[x+1].colonne[y] == 0){
+        g->ligne[x+1].colonne[y] = g->ligne[x].colonne[y];
+        g->ligne[x].colonne[y] = 0;
+        graviteGrille(g, x+1, y);
+    }
+}
 
-int blocAutour(grille g, int x, int y, int pasverif, int compteur){
-    // 1 = haut
-    // 2 = bas
-    // 3 = gauche
-    // 4 = droite
-    if(x+1 >= 14 || y+1 >= 9 || x-1 <= 0 || y-1 <= 0 || compteur >= 3)
+int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur){
+    // 1 = haut, 2 = bas, 3 = gauche, 4 = droite
+
+    if(compteur >= 4)
         return compteur;
+    
+    if (x > 14 || y > 9 || x < 0 || y < 0 || g.ligne[x].colonne[y] != valeur)
+        return 0;
 
-    if(pasverif != 1 && g.ligne[x].colonne[y] == g.ligne[x+1].colonne[y])
-        blocAutour(g, x+1, y, 2, compteur+1);
-
-
-    if(pasverif != 2 && g.ligne[x].colonne[y] == g.ligne[x-1].colonne[y])
-        blocAutour(g, x-1, y, 1, compteur+1);
-
-    if(pasverif != 3 && g.ligne[x].colonne[y] == g.ligne[x].colonne[y+1])
-        blocAutour(g, x, y+1, 4, compteur+1);
-
-    if(pasverif != 4 && g.ligne[x].colonne[y] == g.ligne[x].colonne[y-1])
-        blocAutour(g, x, y-1, 3, compteur+1);
-
-
-
-    return compteur;
-
-
+    if(pasverif == 1)
+        return blocAutour(g, x-1, y, 1, compteur+1, valeur) + blocAutour(g, x, y-1, 3, compteur+1, valeur) + blocAutour(g, x, y+1, 4, compteur+1, valeur);
+    else if(pasverif == 2)
+        return blocAutour(g, x+1, y, 2, compteur+1, valeur) + blocAutour(g, x, y-1, 3, compteur+1, valeur) + blocAutour(g, x, y+1, 4, compteur+1, valeur);
+    else if(pasverif == 3)
+        return blocAutour(g, x-1, y, 1, compteur+1, valeur) + blocAutour(g, x+1, y, 2, compteur+1, valeur) + blocAutour(g, x, y-1, 3, compteur+1, valeur);
+    else if(pasverif == 4)
+        return blocAutour(g, x-1, y, 1, compteur+1, valeur) + blocAutour(g, x+1, y, 2, compteur+1, valeur) + blocAutour(g, x, y+1, 4, compteur+1, valeur);
+    else
+        return blocAutour(g, x-1, y, 1, compteur+1, valeur) + blocAutour(g, x+1, y, 2, compteur+1, valeur) + blocAutour(g, x, y-1, 3, compteur+1, valeur) + blocAutour(g, x, y+1, 4, compteur+1, valeur);
 }
 
 
@@ -546,12 +550,16 @@ bloc bonBloc(grille g, int i, int j){
     int x, y;
     x = i;
     y = j;
-    while(g.ligne[i].colonne[j] == g.ligne[i+1].colonne[j]){
-        i++;
+    while(g.ligne[i].colonne[j] == g.ligne[i].colonne[j-1] || g.ligne[i].colonne[j] == g.ligne[i+1].colonne[j]){
+        while(g.ligne[i].colonne[j] == g.ligne[i+1].colonne[j]){
+            i++;
+        }
+        while(g.ligne[i].colonne[j] == g.ligne[i].colonne[j-1]){
+            j--;
+        }
+
     }
-    while(g.ligne[i].colonne[j] == g.ligne[i].colonne[j-1]){
-        j--;
-    }
+
 
     x = i;
     y = j;
@@ -566,6 +574,9 @@ void deforestageGrille(grille *g, int i, int j){
     // On va donc partir de ce bloc et detruire tout les bloc ayant la meme valeur que ce bloc
     int valeur = g->ligne[i].colonne[j];
     g->ligne[i].colonne[j] = 0;
+    if(i < 0 || j < 0 || i > 14 || j > 9)
+        return;
+
     if (g->ligne[i].colonne[j+1] == valeur){
         deforestageGrille(g, i, j+1);
     }
@@ -594,7 +605,7 @@ void conditionVictoire(grille g){
 
 void conditionDefaite(grille g){
     for(int i = 0; i < 10; i++){
-        if(g.ligne[1].colonne[i] != 0){
+        if(g.ligne[2].colonne[i] != 0){
             defaite();
         }
     }
@@ -665,6 +676,7 @@ void placerBloc(grille *g, bloc b){
 void jeu(grille *g){
 
     bloc bloc;
+
     generationBloc(&bloc); 
     affichage(*g, bloc); 
     while(estplacer(*g, bloc)){ 
@@ -674,8 +686,9 @@ void jeu(grille *g){
         affichage(*g, bloc); 
     }
     changementBloc(g, &bloc); 
-    conditionVictoire(*g); 
     conditionDefaite(*g);
+    conditionVictoire(*g); 
+    
 
     jeu(g);
 
