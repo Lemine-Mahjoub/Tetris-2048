@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ncurses.h>
 #include <time.h>
+#include <unistd.h> 
 #include "bibliotheque.h"
 
 void menuPrincipal() {
@@ -107,7 +108,7 @@ void choixMenuPrincipal(int choix) {
 void nouvellePartie(){
     clear();
     grille g;
-
+    attenteDebut();
     grilleVide(&g);
     jeu(&g);
 }
@@ -140,6 +141,7 @@ void chargerPartie(){
     if (fichierExiste(dossier)) {
         grille g;
         chargerGrille(dossier, &g);
+        attenteDebut();
         jeu(&g);
     } else {
         clear();
@@ -331,7 +333,24 @@ void affichageBloc(bloc bloc){
     for(int i = 0; i < 2; i++){
         for (int j = 0; j < 2; j++){
             if(bloc.tab[i][j] != 0){
-                attron(COLOR_PAIR(1));
+                start_color();
+                init_pair(1, COLOR_GREEN, COLOR_GREEN);
+                init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
+                init_pair(3, COLOR_BLUE, COLOR_BLUE);
+                init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
+                int valeur = bloc.nombre;
+                if(valeur == 2){
+                    attron(COLOR_PAIR(1));
+                }
+                if (valeur == 4){
+                    attron(COLOR_PAIR(2));
+                }
+                if (valeur == 8){
+                    attron(COLOR_PAIR(3));
+                }
+                if (valeur == 16){
+                    attron(COLOR_PAIR(4));
+                }
                 mvprintw(8+i*2, 10+j*6, "x-----x");
                 if(bloc.tab[i][j] < 10)
                     mvprintw(8+i*2+1, 10+j*6, "|  %d  |", bloc.tab[i][j]);
@@ -339,6 +358,18 @@ void affichageBloc(bloc bloc){
                     mvprintw(8+i*2+1, 10+j*6, "| %d  |", bloc.tab[i][j]);
                 mvprintw(8+i*2+2, 10+j*6, "x-----x");
                 attroff(COLOR_PAIR(1));
+                if(valeur == 2){
+                    attron(COLOR_PAIR(1));
+                }
+                if (valeur == 4){
+                    attron(COLOR_PAIR(2));
+                }
+                if (valeur == 8){
+                    attron(COLOR_PAIR(3));
+                }
+                if (valeur == 16){
+                    attron(COLOR_PAIR(4));
+                }
             }
 
         }
@@ -364,12 +395,7 @@ void afficherGrille(grille g){
     for(int i = 0; i < 10; i++){
         start_color();
         init_pair(10, COLOR_RED, COLOR_BLACK);
-        init_pair(1, COLOR_GREEN, COLOR_WHITE);
-        init_pair(2, COLOR_YELLOW, COLOR_WHITE);
-        init_pair(3, COLOR_BLUE, COLOR_WHITE);
-        init_pair(4, COLOR_MAGENTA, COLOR_WHITE);
-        init_pair(5, COLOR_CYAN, COLOR_WHITE);
-        init_pair(6, COLOR_BLACK, COLOR_WHITE);
+
 
 
         attron(COLOR_PAIR(10));
@@ -386,11 +412,37 @@ void afficherGrille(grille g){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             int valeur = g.ligne[i].colonne[j];
-            start_color();
+
             if(valeur != 0){
-                attron(COLOR_PAIR(2));
+                start_color();
+                init_pair(1, COLOR_GREEN, COLOR_GREEN);
+                init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
+                init_pair(3, COLOR_BLUE, COLOR_BLUE);
+                init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
+                init_pair(5, COLOR_CYAN, COLOR_CYAN);
+                init_pair(6, COLOR_BLACK, COLOR_WHITE);
+                if(valeur == 2 || valeur == 64){
+                    attron(COLOR_PAIR(1));
+                }
+                if (valeur == 4 || valeur == 128){
+                    attron(COLOR_PAIR(2));
+                }
+                if (valeur == 8 || valeur == 256){
+                    attron(COLOR_PAIR(3));
+                }
+                if (valeur == 16 || valeur == 512){
+                    attron(COLOR_PAIR(4));
+                }
+                if (valeur == 32 || valeur == 1024){
+                    attron(COLOR_PAIR(5));
+                }
+                if(valeur == 2048){
+                    attron(COLOR_PAIR(6));
+                }
+
             }
             if (valeur < 10){
+                
                 mvprintw(k, center_x-25+j*6,"x-----x");
                 mvprintw(k+1, center_x-25+j*6,"|  %i  |", valeur);
                 mvprintw(k+2, center_x-25+j*6,"x-----x");
@@ -411,8 +463,25 @@ void afficherGrille(grille g){
                 mvprintw(k+2, center_x-25+j*6,"x-----x");
             }
             if(valeur != 0){
-                attroff(COLOR_PAIR(2));
-            } 
+                if(valeur == 2 || valeur == 64){
+                    attroff(COLOR_PAIR(1));
+                }
+                if (valeur == 4 || valeur == 128){
+                    attroff(COLOR_PAIR(2));
+                }
+                if (valeur == 8 || valeur == 256){
+                    attroff(COLOR_PAIR(3));
+                }
+                if (valeur == 16 || valeur == 512){
+                    attroff(COLOR_PAIR(4));
+                }
+                if (valeur == 32 || valeur == 1024){
+                    attroff(COLOR_PAIR(5));
+                }
+                if(valeur == 2048){
+                    attroff(COLOR_PAIR(6));
+                }
+            }
         }
         
         mvprintw(k+10, center_x-25+10*6,"\n");
@@ -433,6 +502,10 @@ void commandeUtilisateur(bloc *b, grille *g){
         g->ligne[b->y+1].colonne[b->x] = 0;
     if(b->tab[1][1] != 0)
         g->ligne[b->y+1].colonne[b->x+1] = 0;
+
+    // Debut chronometre on attend 1s
+
+
     switch (choix) {
 
 
@@ -492,9 +565,6 @@ void commandeUtilisateur(bloc *b, grille *g){
 }
 
 void changementBloc(grille *g, bloc *b){
-    // Les blocs ce transforme, si 4 chiffre de meme valeur sont cote a cote, ils fusionnent, cela supprime tout les nombres du meme chiffre 
-    // et les remplace par un nombre superieur tout en bas a gauche et supprime les autres et les met a 0
-    // on va verifier pour chaque piece du bloc tant que il y'a un bloc a cote de lui a gauche droite ou en bas on va le transformer  en 0
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             if(g->ligne[i].colonne[j] != 0 && i != 14 && j != 9){
@@ -515,7 +585,6 @@ void changementBloc(grille *g, bloc *b){
 }
 
 void graviteGrille(grille *g, int x, int y){
-    // on fait descendre un bloc solitaire tout en bas 
     if(g->ligne[x+1].colonne[y] == 0){
         g->ligne[x+1].colonne[y] = g->ligne[x].colonne[y];
         g->ligne[x].colonne[y] = 0;
@@ -524,11 +593,8 @@ void graviteGrille(grille *g, int x, int y){
 }
 
 int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur){
-    // 1 = haut, 2 = bas, 3 = gauche, 4 = droite
-
     if(compteur >= 4)
         return compteur;
-    
     if (x > 14 || y > 9 || x < 0 || y < 0 || g.ligne[x].colonne[y] != valeur)
         return 0;
 
@@ -671,6 +737,24 @@ void placerBloc(grille *g, bloc b){
         g->ligne[b.y+1].colonne[b.x] = b.tab[1][0];
     if(g->ligne[b.y+1].colonne[b.x+1] == 0)
         g->ligne[b.y+1].colonne[b.x+1] = b.tab[1][1];
+}
+
+
+void attenteDebut(){
+    clear();
+    int max_x, max_y;
+    getmaxyx(stdscr, max_y, max_x);
+    int center_x = (max_x) / 2;
+    int center_y = (max_y) / 2;
+    for(int i = 3; i > 0; i--){
+        clear();
+        attron(A_BOLD);
+        mvprintw(center_y, center_x, "%d", i);
+        attroff(A_BOLD);
+        refresh();
+        sleep(1);
+    }
+
 }
 
 void jeu(grille *g){
