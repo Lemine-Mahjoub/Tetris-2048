@@ -61,6 +61,8 @@ void affichageCommande();
 void placerBloc(grille *g, bloc b);
 
 void commandeUtilisateur(bloc *b, grille *g);
+
+void changementBloc(grille *g, bloc *b);
 int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur);
 bloc bonBloc(grille g, int i, int j);
 void deforestageGrille(grille *g, int i, int j);
