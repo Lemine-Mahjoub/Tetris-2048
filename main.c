@@ -3,7 +3,7 @@
 #include <string.h>
 #include <curses.h>
 #include <time.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include "bibliotheque.h"
 
 
@@ -13,7 +13,7 @@
 
 
 /**
-* Menu Principal 
+* Menu Principal
 * @author Sarah Barlatier
 * @brief Permet d'afficher un menu principal navigable, puis appelle une fonction pour faire les choix
 * @param None
@@ -21,20 +21,22 @@
 */
 void menuPrincipal() {
 
-    
+    // Start Fonction
     initscr();
-    raw(); 
-    keypad(stdscr, TRUE); 
-    noecho(); 
+    raw();
+    keypad(stdscr, TRUE);
+    noecho();
     curs_set(0);
+    // End Fonction
 
 
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
+	// Les deux variables suivantes devraient être des globales
     int center_x = (max_x) / 2;
     int center_y = (max_y) / 2;
 
-
+    // Start Fonction
     attron(A_BOLD);
     mvprintw(max_y/2 - 1, center_x-8, "Bienvenue sur Tetris - 2048");
     attroff(A_BOLD);
@@ -42,20 +44,25 @@ void menuPrincipal() {
     mvprintw(max_y/2 + 20, center_x-18, "Appuyez sur n'importe quelle touche pour continuer...");
     getch();
     clear();
+    // End Fonction
 
+
+	// Tu devrais faire une fonction print_bold(char *texte)
+	// qui fait un attron(A_BOLD) puis un printw(texte) puis un
+	// attroff(A_BOLD) en utilisant les globales center_x et center_y
     attron(A_BOLD);
     mvprintw(max_y/2 - 10, center_x-10, "Bienvenue sur Tetris - 2048");
     attroff(A_BOLD);
     mvprintw(max_y/2, center_x-8, "Menu Principal");
 
     attron(A_REVERSE);
-    mvprintw(max_y/2 + 2, center_x-8, "1 - Nouvelle Partie");
+    mvprintw(max_y/2 + 2, center_x-8, "1 - Nouvelle Partie"); // Tu devrais faire un tableau de char *menu[4] = {"Nouvelle Partie", "Charger Partie", "Regles du Jeu", "Quitter"};
     attroff(A_REVERSE);
 
     mvprintw(max_y/2 + 3, center_x-8, "2 - Charger Partie");
     mvprintw(max_y/2 + 4, center_x-8, "3 - Regles du Jeu");
     mvprintw(max_y/2 + 5, center_x-8, "4 - Quitter");
-    
+
     refresh();
 
 
@@ -63,39 +70,45 @@ void menuPrincipal() {
     int index = 0;
 
 
-    while (choix != '\n') {
-        if(choix == KEY_UP) {
+    while (choix != '\n') { // Code de boucle trop longue
+        // Start Fonction
+		if(choix == KEY_UP) {
             index--;
-            if (index < 0) 
+            if (index < 0)
                 index = 3;
         } else if (choix == KEY_DOWN) {
             index++;
-            if (index > 3) 
+            if (index > 3)
                 index = 0;
         }
+        // End Fonction
 
         clear();
 
-        
+
+        // Start Fonction print_menu(char *title, char* subtitle,char **options)
         mvprintw(max_y/2 - 10, center_x-10, "Bienvenue sur Tetris - 2048");
         mvprintw(max_y/2, center_x-8, "Menu Principal");
 
+		// bien mais tu utilises deux techniques differentes ca aurait value le coup de le faire aussi en haut
         char *options[4] = {"Nouvelle Partie", "Charger Partie", "Regles du Jeu", "Quitter"};
-
-        for(int j = 0; j <= 3; j++){
+		// Declares toutes tes variables le plus en haut de leur scope
+		// PS : Ca vaut aussi le coup de faire une global const
+		for(int j = 0; j <= 3; j++){
             if (index == j){
-                attron(A_REVERSE);
+                attron(A_REVERSE); // Tu devrais faire une fonction print_reverse(char *texte)
                 mvprintw(max_y/2 + 2 + j, center_x-8, "%d - %s", j+1, options[j]);
                 attroff(A_REVERSE);
             } else {
                 mvprintw(max_y/2 + 2 + j, center_x-8, "%d - %s", j+1, options[j]);
             }
         }
+		// End Fonction
 
         choix = getch();
         refresh();
     }
-    
+
     choixMenuPrincipal(index);
 }
 
@@ -104,11 +117,12 @@ void menuPrincipal() {
 * choix menu principal
 * @author Sarah Barlatier
 * @brief Permet de recuperer un entier choix, et a partir de ce choix lancer une fonction, 1: Nouvelle Partie, 2: Charger Partie, 3: Regles, 4: Quitter
-* @param choix --> int : Choix de l'utilisateur 
+* @param choix --> int : Choix de l'utilisateur
 * @return None
 */
 void choixMenuPrincipal(int choix) {
 
+	// Ca c'est un tableau de pointeurs de fonctions ( ca scale mieux que les switchs )
     switch (choix) {
         case 0:
             nouvellePartie();
@@ -160,17 +174,17 @@ void chargerPartie(){
     * @parametre : None
     * @retour : None
     */
-    char dossier[50] = "Sauvegarde/";
+    char dossier[50] = "Sauvegarde/"; // 50 ???
     char nomFichier[50];
 
     clear();
-    echo(); 
+    echo();
     curs_set(1);
 
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
 
-    
+
 
     attron(A_BOLD);
     mvprintw(max_y/2, max_x/2 - 8, "Entrez le nom du fichier : ");
@@ -182,10 +196,10 @@ void chargerPartie(){
     clear();
     noecho();
     curs_set(0);
-    
+
 
     if (fichierExiste(dossier)) {
-        grille g;
+        grille g; // ca doit etre allouer dynamiquement ca
         chargerGrille(dossier, &g);
         attenteDebut();
         jeu(&g);
@@ -197,7 +211,7 @@ void chargerPartie(){
         attron(A_BOLD);
         mvprintw(max_y/2, max_x/2 - 8, "Le fichier n'existe pas\n");
         attroff(A_BOLD);
-        
+
         mvprintw(max_y/2 + 20, max_x/2 -18, "Appuyez sur n'importe quelle touche pour continuer...");
         getch();
         clear();
@@ -271,7 +285,7 @@ void reglesDuJeu(){
 /**
 * Quitter
 * @author : Sarah Barlatier
-* @brief Permet de quiter le jeu 
+* @brief Permet de quiter le jeu
 * @param  None
 * @return Aucun
 */
@@ -306,16 +320,17 @@ int fichierExiste(char nom[50]) {
 
 
 /**
-* charger grille 
+* charger grille
 * @author : Fabrice Gerbaud
 * @brief Permet de remplir une grille a l'aide d'un fichier
-* @param  nom > char : Nom du fichier, 
+* @param  nom > char : Nom du fichier,
 * @param  g > grille : Grille a remplir
 * @return None
 */
 void chargerGrille(char nom[50], grille *g) {
     FILE *fichier;
     fichier = fopen(nom, "r");
+	//Check si le fichier est bien ouvert ici et gestion erreur
     initscr();
     raw();
     keypad(stdscr, TRUE);
@@ -325,8 +340,8 @@ void chargerGrille(char nom[50], grille *g) {
 
     clear();
     if (fichier != NULL) {
-        for(int i = 0; i < 15; i++){
-            for(int j = 0; j < 10; j++){
+        for(int i = 0; i < 15; i++){ // 15 devrais etre une global pour ajuster la taille de la grille (scalling)
+            for(int j = 0; j < 10; j++){ // 10 pareil
                 fscanf(fichier, "%d,", &g->ligne[i].colonne[j]);
             }
         }
@@ -403,13 +418,15 @@ void grilleVide(grille *g){
 */
 void generationBloc(bloc *nouveauBloc){
 
-    srand(time(NULL));
+    srand(time(NULL)); // Faire une fonction init_rand() qui est appeler une fois au debut du programme pour la verbosite
 
+	// Start Fonction new_bloc(bloc *bloc)
     int tableauValeur[4] = {2, 4, 8, 16};
     int valeur = rand()%4;
     nouveauBloc->nombre = tableauValeur[valeur];
 
-    for(int i = 0; i < 2; i++){
+
+    for(int i = 0; i < 2; i++){ // Fonction init_bloc(bloc *bloc)
         for (int j = 0; j < 2; j++){
             nouveauBloc->tab[i][j] = 0;
         }
@@ -417,16 +434,17 @@ void generationBloc(bloc *nouveauBloc){
 
     nouveauBloc->x = 4;
     nouveauBloc->y = 0;
-
+	// End Fonction
+	// Start Fonction forme_bloc(bloc *bloc)
     int forme = rand()%4;
-    switch (forme) {
+    switch (forme) { // Tableau de pointeurs de fonctions avec les shapes (ca scale mieux que les switchs)
         case 0:
             nouveauBloc->tab[0][0] = tableauValeur[valeur];  // **
             nouveauBloc->tab[0][1] = tableauValeur[valeur];  // *
             nouveauBloc->tab[1][0] = tableauValeur[valeur];
             break;
         case 1:
-            nouveauBloc->tab[0][0] = tableauValeur[valeur];  // ** 
+            nouveauBloc->tab[0][0] = tableauValeur[valeur];  // **
             nouveauBloc->tab[0][1] = tableauValeur[valeur];  //  *
             nouveauBloc->tab[1][1] = tableauValeur[valeur];
             break;
@@ -440,28 +458,48 @@ void generationBloc(bloc *nouveauBloc){
             nouveauBloc->tab[1][0] = tableauValeur[valeur]; // **
             nouveauBloc->tab[1][1] = tableauValeur[valeur];
             break;
-        
+
     }
+	// End Fonction
 }
 
 /**
 * estplacer
 * @author : Lemine Mahjoub
 * @brief  Permet de verifier si un bloc est placer dans la grille
-* @param  g > grille : grille 
-* @param  bloc > bloc : bloc 
+* @param  g > grille : grille
+* @param  bloc > bloc : bloc
 * @return int : 1 si le bloc est placer, 0 sinon
 */
 int estplacer(grille g, bloc b){
+
+	// Incomprensible, il faut du code plus verbeux
+	// Pour le style tu peux faire un tableau de conditions et tu boucles dessus
+
+	/*
+	Bien sur il faut faire des jolies conditions verbeuse (avec des noms de fonctions de conditions bien explicite)
+	bool conditions[] = {
+		(b.y + 2 > 14),
+		(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0)),
+		(b.tab[1][0] != 0 && b.tab[1][1] == 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+1].colonne[b.x+1] != 0)),
+		(b.tab[1][0] == 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x+1] != 0 || g.ligne[b.y+1].colonne[b.x] != 0))
+	}
+
+	for(int i = 0; i < 4; i++){
+		if(conditions[i])
+			return 0;
+	}
+	return 1;
+	*/
+
     if(b.y + 2 > 14)
         return 0;
-    if(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0))
+    if(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0)) // Fonction pour tes conditions
         return 0;
     if (b.tab[1][0] != 0 && b.tab[1][1] == 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+1].colonne[b.x+1] != 0))
         return 0;
     if (b.tab[1][0] == 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x+1] != 0 || g.ligne[b.y+1].colonne[b.x] != 0))
         return 0;
-
     return 1;
 }
 
@@ -505,12 +543,17 @@ void affichageBloc(bloc bloc){
         for (int j = 0; j < 2; j++){
             if(bloc.tab[i][j] != 0){
                 start_color();
+				// Start Fonction
                 init_pair(1, COLOR_WHITE, COLOR_GREEN);
                 init_pair(2, COLOR_WHITE, COLOR_YELLOW);
                 init_pair(3, COLOR_WHITE, COLOR_BLUE);
                 init_pair(4, COLOR_WHITE, COLOR_MAGENTA);
+				// End Fonction
+
                 int valeur = bloc.nombre;
-                if(valeur == 2){
+                // Start Fonction
+				// Tableau de pointeurs de fonctions avec les couleurs (ca scale mieux que les switchs)
+				if(valeur == 2){
                     attron(COLOR_PAIR(1));
                 }
                 if (valeur == 4){
@@ -522,12 +565,16 @@ void affichageBloc(bloc bloc){
                 if (valeur == 16){
                     attron(COLOR_PAIR(4));
                 }
+				// End Fonction
+				// Start Fonction
                 mvprintw(8+i*2, 10+j*6, "x-----x");
                 if(bloc.tab[i][j] < 10)
                     mvprintw(8+i*2+1, 10+j*6, "|  %d  |", bloc.tab[i][j]);
-                else 
+                else
                     mvprintw(8+i*2+1, 10+j*6, "| %d  |", bloc.tab[i][j]);
                 mvprintw(8+i*2+2, 10+j*6, "x-----x");
+				// End Fonction
+				// C'est le meme code que plus haut ???
                 attroff(COLOR_PAIR(1));
                 if(valeur == 2){
                     attron(COLOR_PAIR(1));
@@ -554,6 +601,9 @@ void affichageBloc(bloc bloc){
 * @return None
 */
 void affichageCommande(){
+	// Good
+	// DEFINE pour les positions
+
     mvprintw(15, 10, "Commande :");
     mvprintw(17, 10, "Fleche Bas - Deplacement Bas");
     mvprintw(18, 10, "Fleche Gauche - Deplacement Gauche");
@@ -571,10 +621,12 @@ void affichageCommande(){
 * @return None
 */
 void afficherGrille(grille g){
+
+	// Impossible a faire scale, la fonction est bcp trop grosse
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
-    int center_x = (max_x) / 2;
-    for(int i = 0; i < 10; i++){
+    int center_x = (max_x) / 2; // Tout l'interet de l'avoir en global
+    for(int i = 0; i < 10; i++){ // Fonction afficher_grille(grille *g)
         start_color();
         init_pair(10, COLOR_RED, COLOR_BLACK);
         attron(COLOR_PAIR(10));
@@ -596,6 +648,31 @@ void afficherGrille(grille g){
             init_pair(4, COLOR_WHITE, COLOR_MAGENTA);
             init_pair(5, COLOR_WHITE, COLOR_CYAN);
             init_pair(6, COLOR_WHITE, COLOR_WHITE);
+			// Tu init les memes paires de couleurs plusieurs fois dans le prg (ca scale pas), c'est un soucis de perf en plus
+			// Il faut les init une fois au debut du programme
+			// Les stocker dans une global
+			// Faire des defines sur les pairs de couleurs
+			/*
+				#DEFINE WHITE_PAIR 1
+				#DEFINE GREEN_PAIR 2
+				etc etc
+			*/
+			// Start Fonction couleur_bloc(int valeur)
+			/*
+				bool colors[] = {
+					(valeur == 2 || valeur == 64),
+					(valeur == 4 || valeur == 128),
+					(valeur == 8 || valeur == 256),
+					(valeur == 16 || valeur == 512),
+					(valeur == 32 || valeur == 1024),
+					(valeur == 2048)
+				}
+				for (int i = 0; i < 6; i++){
+					if(colors[i])
+						attron(COLOR_PAIR(i+1));
+				}
+
+			*/
             if(valeur == 2 || valeur == 64)
                 attron(COLOR_PAIR(1));
             if (valeur == 4 || valeur == 128)
@@ -608,6 +685,8 @@ void afficherGrille(grille g){
                 attron(COLOR_PAIR(5));
             if(valeur == 2048)
                 attron(COLOR_PAIR(6));
+			// End Fonction
+			// Start Fonction afficher_bloc(int valeur)
             mvprintw(k, center_x-25+j*6,"x-----x");
             if (valeur < 10)
                 mvprintw(k+1, center_x-25+j*6,"|  %i  |", valeur);
@@ -618,6 +697,8 @@ void afficherGrille(grille g){
             else
                 mvprintw(k+1, center_x-25+j*6,"|%i |", valeur);
             mvprintw(k+2, center_x-25+j*6,"x-----x");
+			// End Fonction
+			// Meme code qu'en haut
             if(valeur == 2 || valeur == 64)
                 attroff(COLOR_PAIR(1));
             if (valeur == 4 || valeur == 128)
@@ -645,9 +726,9 @@ void afficherGrille(grille g){
 * @param  *g > grille : grille a modifier
 * @return None
 */
-void commandeUtilisateur(bloc *b, grille *g){
+void commandeUtilisateur(bloc *b, grille *g){ // Ho no , Ho no, Ho no no no no no no,  pas toi zizou, pas apres tout ce que tu as fait
 
-    
+
     if(b->tab[0][0] != 0)
         g->ligne[b->y].colonne[b->x] = 0;
     if(b->tab[0][1] != 0)
@@ -656,7 +737,7 @@ void commandeUtilisateur(bloc *b, grille *g){
         g->ligne[b->y+1].colonne[b->x] = 0;
     if(b->tab[1][1] != 0)
         g->ligne[b->y+1].colonne[b->x+1] = 0;
-    
+
     time_t debut, maintenant;
     time(&debut);
     timeout(1000);
@@ -668,6 +749,7 @@ void commandeUtilisateur(bloc *b, grille *g){
 
     nodelay(stdscr, FALSE);
     if(choix == ERR ){
+		// Verbositer des conditions a ameliorer absolument, ca ne scale pas dans le temps ce genre de truc
         if(b->y <= 12){
             if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y+2].colonne[b->x] != 0 && g->ligne[b->y+2].colonne[b->x] == 0){
                 b->y = b->y + 1;
@@ -678,11 +760,11 @@ void commandeUtilisateur(bloc *b, grille *g){
             else if(b->tab[1][1] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x] == 0)){
                 b->y = b->y + 1;
             }
-            
+
         }
         return;
     }
-    switch (choix) {
+    switch (choix) { // ABOMINATION !!!
         case KEY_DOWN:
             if(b->y <= 12){
                 if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y+2].colonne[b->x] != 0 && g->ligne[b->y+2].colonne[b->x] == 0){
@@ -694,9 +776,9 @@ void commandeUtilisateur(bloc *b, grille *g){
                 else if(b->tab[1][1] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x] == 0)){
                     b->y = b->y + 1;
                 }
-                
+
             }
-            
+
             break;
         case KEY_LEFT:
             if(b->x >= 1){
@@ -745,6 +827,8 @@ void commandeUtilisateur(bloc *b, grille *g){
 * @return None
 */
 void placerBloc(grille *g, bloc b){
+	// Il a l'air de manquer la gestion des erreur ici,
+	// que se passe t'il si le bloc ne peut pas etre placer ?
     if(g->ligne[b.y].colonne[b.x] == 0)
         g->ligne[b.y].colonne[b.x] = b.tab[0][0];
     if(g->ligne[b.y].colonne[b.x+1] == 0)
@@ -766,10 +850,12 @@ void placerBloc(grille *g, bloc b){
 void changementBloc(grille *g, bloc *b){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
+			// Start Fonction
             if(g->ligne[i].colonne[j] != 0 && i != 14 && j != 9){
-                int valeur = g->ligne[i].colonne[j]; 
+				// Start Fonction
+                int valeur = g->ligne[i].colonne[j];
                 int compteur = 1 + blocAutour(*g, i, j, 0, 0, valeur);
-                
+
                 if(compteur >= 4){
                     bloc b = bonBloc(*g, i, j);
                     int x = b.x;
@@ -778,7 +864,9 @@ void changementBloc(grille *g, bloc *b){
                     g->ligne[x].colonne[y] = valeur*2;
                     graviteGrille(g, x, y);
                 }
+				// End Fonction
             }
+			// End Fonction
         }
     }
 }
@@ -836,7 +924,7 @@ void graviteGrille(grille *g, int x, int y){
 * Bon Bloc
 * @author : Lemine Mahjoub
 * @brief Permet de donner les cocordonnees du bloc le plus en bas a gauche possible
-* @param  g > grille : grille 
+* @param  g > grille : grille
 * @param  x > int : position x du bloc
 * @param  y > int : position y du bloc
 * @return bloc -> bloc le plus en bas a gauche possible
@@ -886,10 +974,10 @@ void deforestageGrille(grille *g, int i, int j){
 }
 
 /**
-* condition Victoire 
+* condition Victoire
 * @author : Lemine Mahjoub
 * @brief Permet de verifier si un bloc de valeur 2048 existe, si oui, on lance la fonction victoire
-* @param  g > grille : grille 
+* @param  g > grille : grille
 * @return None
 */
 void conditionVictoire(grille g){
@@ -903,10 +991,10 @@ void conditionVictoire(grille g){
 }
 
 /**
-* condition Defaite 
+* condition Defaite
 * @author : Lemine Mahjoub
 * @brief Permet de verifier si un bloc ne peut plus descendre, si oui, on lance la fonction defaite
-* @param  g > grille : grille 
+* @param  g > grille : grille
 * @return None
 */
 void conditionDefaite(grille g){
@@ -918,10 +1006,10 @@ void conditionDefaite(grille g){
 }
 
 /**
-* Victoire 
+* Victoire
 * @author : Lemine Mahjoub
 * @brief Affiche un ecran de victoire, puis lance le menu principal
-* @param  g > grille : grille 
+* @param  g > grille : grille
 * @return None
 */
 void victoire(){
@@ -941,10 +1029,10 @@ void victoire(){
 }
 
 /**
-* Defaite 
+* Defaite
 * @author : Lemine Mahjoub
 * @brief Affiche un ecran de defaite, puis lance le menu principal
-* @param  g > grille : grille 
+* @param  g > grille : grille
 * @return None
 */
 void defaite(){
@@ -972,16 +1060,16 @@ void defaite(){
 */
 void jeu(grille *g){
     bloc bloc;
-    generationBloc(&bloc); 
-    affichage(*g, bloc); 
-    while(estplacer(*g, bloc)){ 
-        commandeUtilisateur(&bloc, g); 
-        placerBloc(g, bloc); 
-        affichage(*g, bloc); 
+    generationBloc(&bloc);
+    affichage(*g, bloc);
+    while(estplacer(*g, bloc)){
+        commandeUtilisateur(&bloc, g);
+        placerBloc(g, bloc);
+        affichage(*g, bloc);
     }
-    changementBloc(g, &bloc); 
+    changementBloc(g, &bloc);
     conditionDefaite(*g);
-    conditionVictoire(*g); 
+    conditionVictoire(*g);
     jeu(g);
 }
 
