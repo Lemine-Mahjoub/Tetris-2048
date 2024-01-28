@@ -1,12 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
+#include <curses.h>
 #include <time.h>
 #include <unistd.h> 
 #include "bibliotheque.h"
 
+
+// ==== Menu Principal ====
+
+// =================================================================== //
+
+
+/**
+* Menu Principal 
+* @author Sarah Barlatier
+* @brief Permet d'afficher un menu principal navigable, puis appelle une fonction pour faire les choix
+* @param None
+* @return None
+*/
 void menuPrincipal() {
+
     
     initscr();
     raw(); 
@@ -86,7 +100,15 @@ void menuPrincipal() {
 }
 
 
+/**
+* choix menu principal
+* @author Sarah Barlatier
+* @brief Permet de recuperer un entier choix, et a partir de ce choix lancer une fonction, 1: Nouvelle Partie, 2: Charger Partie, 3: Regles, 4: Quitter
+* @param choix --> int : Choix de l'utilisateur 
+* @return None
+*/
 void choixMenuPrincipal(int choix) {
+
     switch (choix) {
         case 0:
             nouvellePartie();
@@ -105,7 +127,16 @@ void choixMenuPrincipal(int choix) {
     }
 }
 
+
+/**
+* Nouvelle Partie
+* @author : Sarah Barlatier
+* @brief Permet de lancer une nouvelle partie, en creant une grille vide, puis en lancant la fonction jeu
+* @param  None
+* @return Aucun
+*/
 void nouvellePartie(){
+
     clear();
     grille g;
     attenteDebut();
@@ -113,7 +144,22 @@ void nouvellePartie(){
     jeu(&g);
 }
 
+
+/**
+* Charger Partie
+* @author : Sarah Barlatier
+* @brief Permet de lancer une charger partie, en verifiant d'abord si le fichier existe, puis initialisant le fichier dans une grille, puis en lancant la fonction jeu
+* @param  None
+* @return Aucun
+*/
 void chargerPartie(){
+    /*
+    * Char
+    * @auteur : Sarah Barlatier
+    * @traitement : Permet d'afficher un menu principal navigable, puis appelle une fonction pour faire les choix
+    * @parametre : None
+    * @retour : None
+    */
     char dossier[50] = "Sauvegarde/";
     char nomFichier[50];
 
@@ -159,6 +205,37 @@ void chargerPartie(){
     }
 }
 
+/**
+* Attente Debut
+* @author : Sarah Barlatier
+* @brief Permet d'attendre 3 secondes, avant de lancer une partie
+* @param  None
+* @return Aucun
+*/
+void attenteDebut(){
+    clear();
+    int max_x, max_y;
+    getmaxyx(stdscr, max_y, max_x);
+    int center_x = (max_x) / 2;
+    int center_y = (max_y) / 2;
+    for(int i = 3; i > 0; i--){
+        clear();
+        attron(A_BOLD);
+        mvprintw(center_y, center_x, "%d", i);
+        attroff(A_BOLD);
+        refresh();
+        sleep(1);
+    }
+}
+
+
+/**
+* Regles du Jeu
+* @author : Sarah Barlatier
+* @brief Permet de lancer une nouvelle partie, en creant une grille vide, puis en lancant la fonction jeu
+* @param  None
+* @return Aucun
+*/
 void reglesDuJeu(){
     clear();
 
@@ -190,12 +267,32 @@ void reglesDuJeu(){
     menuPrincipal();
 }
 
+
+/**
+* Quitter
+* @author : Sarah Barlatier
+* @brief Permet de quiter le jeu 
+* @param  None
+* @return Aucun
+*/
 void quitter(){
     clear();
     endwin();
     exit(0);
 }
 
+// =================================================================== //
+
+
+// ==== Gestionnaire Fichier ==== //
+
+/**
+* fichier existe ?
+* @author : Fabrice Gerbaud
+* @brief Permet verifier si un fichier existe a l'aide d'un nom de fichier
+* @param  nom > char : Nom du fichier
+* @return int : 1 si le fichier existe, 0 sinon
+*/
 int fichierExiste(char nom[50]) {
     FILE *fichier;
     fichier = fopen(nom, "r");
@@ -207,6 +304,46 @@ int fichierExiste(char nom[50]) {
     }
 }
 
+
+/**
+* charger grille 
+* @author : Fabrice Gerbaud
+* @brief Permet de remplir une grille a l'aide d'un fichier
+* @param  nom > char : Nom du fichier, 
+* @param  g > grille : Grille a remplir
+* @return None
+*/
+void chargerGrille(char nom[50], grille *g) {
+    FILE *fichier;
+    fichier = fopen(nom, "r");
+    initscr();
+    raw();
+    keypad(stdscr, TRUE);
+    noecho();
+    curs_set(0);
+
+
+    clear();
+    if (fichier != NULL) {
+        for(int i = 0; i < 15; i++){
+            for(int j = 0; j < 10; j++){
+                fscanf(fichier, "%d,", &g->ligne[i].colonne[j]);
+            }
+        }
+
+    }
+
+    refresh();
+    getch();
+
+}
+/**
+* Sauvegarder Grille
+* @author : Fabrice Gerbaud
+* @brief Permet de Sauvegarder une grille dans un fichier, attention : on ajoute de base l'extension txt a la fin de ce fichier
+* @param  g > grille : grille de valeur a sauvegarder
+* @return None
+*/
 void sauvegarderGrille(grille g) {
     echo();
     curs_set(1);
@@ -233,31 +370,22 @@ void sauvegarderGrille(grille g) {
     }
 }
 
-void chargerGrille(char nom[50], grille *g) {
-    FILE *fichier;
-    fichier = fopen(nom, "r");
-    initscr();
-    raw();
-    keypad(stdscr, TRUE);
-    noecho();
-    curs_set(0);
+// =================================================================== //
 
 
-    clear();
-    if (fichier != NULL) {
-        for(int i = 0; i < 15; i++){
-            for(int j = 0; j < 10; j++){
-                fscanf(fichier, "%d,", &g->ligne[i].colonne[j]);
-            }
-        }
 
-    }
 
-    refresh();
-    getch();
+// ==== Jeu ==== //
 
-}
+// =================================================================== //
 
+/**
+* Grille Vide
+* @author : Lemine Mahjoub
+* @brief Permet de remplir une grille de 0
+* @param  *g > grille : grille a remplir
+* @return None
+*/
 void grilleVide(grille *g){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
@@ -266,7 +394,13 @@ void grilleVide(grille *g){
     }
 }
 
-
+/**
+* Generation Bloc
+* @author : Lemine Mahjoub
+* @brief Permet de creer un nouveau bloc aleatoire avec des valeurs initialiser a 2, 4, 8 ou 16 et une forme aleatoire
+* @param  *nouveauBloc > bloc : bloc aleatoire
+* @return None
+*/
 void generationBloc(bloc *nouveauBloc){
 
     srand(time(NULL));
@@ -310,6 +444,35 @@ void generationBloc(bloc *nouveauBloc){
     }
 }
 
+/**
+* estplacer
+* @author : Lemine Mahjoub
+* @brief  Permet de verifier si un bloc est placer dans la grille
+* @param  g > grille : grille 
+* @param  bloc > bloc : bloc 
+* @return int : 1 si le bloc est placer, 0 sinon
+*/
+int estplacer(grille g, bloc b){
+    if(b.y + 2 > 14)
+        return 0;
+    if(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0))
+        return 0;
+    if (b.tab[1][0] != 0 && b.tab[1][1] == 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+1].colonne[b.x+1] != 0))
+        return 0;
+    if (b.tab[1][0] == 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x+1] != 0 || g.ligne[b.y+1].colonne[b.x] != 0))
+        return 0;
+
+    return 1;
+}
+
+/**
+* Affichage
+* @author : Lemine Mahjoub
+* @brief Appelle les fonctions d'affichage de la grille, du bloc et des commandes
+* @param  g > grille : grille a afficher
+* @param  bloc > bloc : bloc a afficher
+* @return None
+*/
 void affichage(grille g, bloc bloc){
     initscr();
     raw();
@@ -324,6 +487,14 @@ void affichage(grille g, bloc bloc){
     affichageCommande();
 }
 
+
+/**
+* Affichage Bloc
+* @author : Lemine Mahjoub
+* @brief Permet d'afficher un bloc a l'ecran
+* @param  bloc > bloc : bloc a afficher
+* @return None
+*/
 void affichageBloc(bloc bloc){
 
     mvprintw(5, 10, "Bloc :");
@@ -334,10 +505,10 @@ void affichageBloc(bloc bloc){
         for (int j = 0; j < 2; j++){
             if(bloc.tab[i][j] != 0){
                 start_color();
-                init_pair(1, COLOR_GREEN, COLOR_GREEN);
-                init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
-                init_pair(3, COLOR_BLUE, COLOR_BLUE);
-                init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
+                init_pair(1, COLOR_WHITE, COLOR_GREEN);
+                init_pair(2, COLOR_WHITE, COLOR_YELLOW);
+                init_pair(3, COLOR_WHITE, COLOR_BLUE);
+                init_pair(4, COLOR_WHITE, COLOR_MAGENTA);
                 int valeur = bloc.nombre;
                 if(valeur == 2){
                     attron(COLOR_PAIR(1));
@@ -371,12 +542,17 @@ void affichageBloc(bloc bloc){
                     attron(COLOR_PAIR(4));
                 }
             }
-
         }
     }
 }
 
-
+/**
+* Affichage Commande
+* @author : Lemine Mahjoub
+* @brief Permet d'afficher les commandes a l'ecran
+* @param  None
+* @return None
+*/
 void affichageCommande(){
     mvprintw(15, 10, "Commande :");
     mvprintw(17, 10, "Fleche Bas - Deplacement Bas");
@@ -386,12 +562,18 @@ void affichageCommande(){
     mvprintw(21, 10, "S - Sauvegarder et Quitter");
 }
 
-void afficherGrille(grille g){
 
+/**
+* Affichage Grille
+* @author : Lemine Mahjoub
+* @brief Permet d'afficher la grile a l'ecran
+* @param  g > grille : grille a afficher
+* @return None
+*/
+void afficherGrille(grille g){
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
     int center_x = (max_x) / 2;
-
     for(int i = 0; i < 10; i++){
         start_color();
         init_pair(10, COLOR_RED, COLOR_BLACK);
@@ -402,21 +584,18 @@ void afficherGrille(grille g){
         attroff(COLOR_PAIR(10));
         mvprintw(5, center_x-25+i*6,"     ", i);
         mvprintw(6, center_x-25+i*6,"     ");
-        
     }
     int k = 10;
-    
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             int valeur = g.ligne[i].colonne[j];
             start_color();
-            init_pair(1, COLOR_GREEN, COLOR_GREEN);
-            init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
-            init_pair(3, COLOR_BLUE, COLOR_BLUE);
-            init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
-            init_pair(5, COLOR_CYAN, COLOR_CYAN);
-            init_pair(6, COLOR_BLACK, COLOR_WHITE);
-
+            init_pair(1, COLOR_WHITE, COLOR_GREEN);
+            init_pair(2, COLOR_WHITE, COLOR_YELLOW);
+            init_pair(3, COLOR_WHITE, COLOR_BLUE);
+            init_pair(4, COLOR_WHITE, COLOR_MAGENTA);
+            init_pair(5, COLOR_WHITE, COLOR_CYAN);
+            init_pair(6, COLOR_WHITE, COLOR_WHITE);
             if(valeur == 2 || valeur == 64)
                 attron(COLOR_PAIR(1));
             if (valeur == 4 || valeur == 128)
@@ -429,10 +608,7 @@ void afficherGrille(grille g){
                 attron(COLOR_PAIR(5));
             if(valeur == 2048)
                 attron(COLOR_PAIR(6));
-
-
             mvprintw(k, center_x-25+j*6,"x-----x");
-            
             if (valeur < 10)
                 mvprintw(k+1, center_x-25+j*6,"|  %i  |", valeur);
             else if(valeur < 100)
@@ -442,7 +618,6 @@ void afficherGrille(grille g){
             else
                 mvprintw(k+1, center_x-25+j*6,"|%i |", valeur);
             mvprintw(k+2, center_x-25+j*6,"x-----x");
-
             if(valeur == 2 || valeur == 64)
                 attroff(COLOR_PAIR(1));
             if (valeur == 4 || valeur == 128)
@@ -455,16 +630,21 @@ void afficherGrille(grille g){
                 attroff(COLOR_PAIR(5));
             if(valeur == 2048)
                 attroff(COLOR_PAIR(6));
-            
         }
-        
         mvprintw(k+10, center_x-25+10*6,"\n");
         k = k + 2;
     }
 }
 
 
-
+/**
+* Commande Utilisateur
+* @author : Lemine Mahjoub
+* @brief Permet de recuperer les commandes utilisateur et de bouger le bloc en fonction de ces commandes, si le temps (initialiser a 1 seconde) est depasse, le bloc descend d'une case
+* @param  *b > bloc : bloc a bouger
+* @param  *g > grille : grille a modifier
+* @return None
+*/
 void commandeUtilisateur(bloc *b, grille *g){
 
     
@@ -556,6 +736,33 @@ void commandeUtilisateur(bloc *b, grille *g){
     }
 }
 
+/**
+* Placer Bloc
+* @author : Lemine Mahjoub
+* @brief Permet de placer un bloc dans la grille
+* @param  b > bloc : bloc a bouger
+* @param  *g > grille : grille a modifier
+* @return None
+*/
+void placerBloc(grille *g, bloc b){
+    if(g->ligne[b.y].colonne[b.x] == 0)
+        g->ligne[b.y].colonne[b.x] = b.tab[0][0];
+    if(g->ligne[b.y].colonne[b.x+1] == 0)
+        g->ligne[b.y].colonne[b.x+1] = b.tab[0][1];
+    if(g->ligne[b.y+1].colonne[b.x] == 0)
+        g->ligne[b.y+1].colonne[b.x] = b.tab[1][0];
+    if(g->ligne[b.y+1].colonne[b.x+1] == 0)
+        g->ligne[b.y+1].colonne[b.x+1] = b.tab[1][1];
+}
+
+/**
+* Changement Bloc
+* @author : Lemine Mahjoub
+* @brief Permet de verifier si au moins 4 bloc de meme valeurs ce touche, si c'est le cas, on fusionne les blocs en un seul bloc de multiplier par 2 que l'on place tout en bas a gauche possible, puis on applique une graviter pour le faire tomber le plus bas possible
+* @param  *b > bloc : bloc a bouger
+* @param  *g > grille : grille a modifier
+* @return None
+*/
 void changementBloc(grille *g, bloc *b){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
@@ -576,20 +783,24 @@ void changementBloc(grille *g, bloc *b){
     }
 }
 
-void graviteGrille(grille *g, int x, int y){
-    if(g->ligne[x+1].colonne[y] == 0){
-        g->ligne[x+1].colonne[y] = g->ligne[x].colonne[y];
-        g->ligne[x].colonne[y] = 0;
-        graviteGrille(g, x+1, y);
-    }
-}
 
+/**
+* Bloc Autour
+* @author : Lemine Mahjoub
+* @brief Permet de calculer recursivement le nombre de bloc autour d'un bloc
+* @param  g > grille : grille
+* @param  x > int : position x du bloc
+* @param  y > int : position y du bloc
+* @param  pasverif > int : permet de verifier si on est deja passer par cette case, 0: non, 1: gauche, 2: droite, 3: haut, 4: bas
+* @param  compteur > int : compteur de bloc similaire
+* @param  valeur > int : valeur du bloc
+* @return int : nombre de bloc similaire a coter
+*/
 int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur){
     if(compteur >= 4)
         return compteur;
     if (x > 14 || y > 9 || x < 0 || y < 0 || g.ligne[x].colonne[y] != valeur)
         return 0;
-
     if(pasverif == 1)
         return blocAutour(g, x-1, y, 1, compteur+1, valeur) + blocAutour(g, x, y-1, 3, compteur+1, valeur) + blocAutour(g, x, y+1, 4, compteur+1, valeur);
     else if(pasverif == 2)
@@ -603,8 +814,34 @@ int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur){
 }
 
 
+/**
+* Gravite Grille
+* @author : Lemine Mahjoub
+* @brief Permet de faire tomber un bloc le plus bas possible
+* @param  *g > grille : grille a modifier
+* @param  x > int : position x du bloc
+* @param  y > int : position y du bloc
+* @return None
+*/
+void graviteGrille(grille *g, int x, int y){
+    if(g->ligne[x+1].colonne[y] == 0){
+        g->ligne[x+1].colonne[y] = g->ligne[x].colonne[y];
+        g->ligne[x].colonne[y] = 0;
+        graviteGrille(g, x+1, y);
+    }
+}
+
+
+/**
+* Bon Bloc
+* @author : Lemine Mahjoub
+* @brief Permet de donner les cocordonnees du bloc le plus en bas a gauche possible
+* @param  g > grille : grille 
+* @param  x > int : position x du bloc
+* @param  y > int : position y du bloc
+* @return bloc -> bloc le plus en bas a gauche possible
+*/
 bloc bonBloc(grille g, int i, int j){
-    // le bon bloc est le bloc coller le plus en bas a gauche ayant les meme valeur
     int x, y;
     x = i;
     y = j;
@@ -615,18 +852,22 @@ bloc bonBloc(grille g, int i, int j){
         while(g.ligne[i].colonne[j] == g.ligne[i].colonne[j-1]){
             j--;
         }
-
     }
-
-
-    x = i;
-    y = j;
     bloc b;
     b.x = i;
     b.y = j;
     return b;
 }
 
+/**
+* deforestage Grille
+* @author : Lemine Mahjoub
+* @brief Permet de detruire tout les bloc ayant la meme valeur que le bloc en parametre et etant a coter de ce bloc recursivement
+* @param  *g > grille : grille a modifier
+* @param  i > int : position x du bloc
+* @param  j > int : position y du bloc
+* @return None
+*/
 void deforestageGrille(grille *g, int i, int j){
     // On est tout en bas a gauche, on souhaite vraiment detruire tout les bloc possible ayant la meme valeur que ce bloc
     // On va donc partir de ce bloc et detruire tout les bloc ayant la meme valeur que ce bloc
@@ -634,22 +875,23 @@ void deforestageGrille(grille *g, int i, int j){
     g->ligne[i].colonne[j] = 0;
     if(i < 0 || j < 0 || i > 14 || j > 9)
         return;
-
-    if (g->ligne[i].colonne[j+1] == valeur){
+    if (g->ligne[i].colonne[j+1] == valeur)
         deforestageGrille(g, i, j+1);
-    }
-    if (g->ligne[i].colonne[j-1] == valeur){
+    if (g->ligne[i].colonne[j-1] == valeur)
         deforestageGrille(g, i, j-1);
-    }
-    if (g->ligne[i+1].colonne[j] == valeur){
+    if (g->ligne[i+1].colonne[j] == valeur)
         deforestageGrille(g, i+1, j);
-    }
-    if (g->ligne[i-1].colonne[j] == valeur){
+    if (g->ligne[i-1].colonne[j] == valeur)
         deforestageGrille(g, i-1, j);
-    }
-
 }
 
+/**
+* condition Victoire 
+* @author : Lemine Mahjoub
+* @brief Permet de verifier si un bloc de valeur 2048 existe, si oui, on lance la fonction victoire
+* @param  g > grille : grille 
+* @return None
+*/
 void conditionVictoire(grille g){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
@@ -658,9 +900,15 @@ void conditionVictoire(grille g){
             }
         }
     }
-
 }
 
+/**
+* condition Defaite 
+* @author : Lemine Mahjoub
+* @brief Permet de verifier si un bloc ne peut plus descendre, si oui, on lance la fonction defaite
+* @param  g > grille : grille 
+* @return None
+*/
 void conditionDefaite(grille g){
     for(int i = 0; i < 10; i++){
         if(g.ligne[2].colonne[i] != 0){
@@ -669,17 +917,22 @@ void conditionDefaite(grille g){
     }
 }
 
+/**
+* Victoire 
+* @author : Lemine Mahjoub
+* @brief Affiche un ecran de victoire, puis lance le menu principal
+* @param  g > grille : grille 
+* @return None
+*/
 void victoire(){
     clear();
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
     int center_x = (max_x) / 2;
     int center_y = (max_y) / 2;
-
     attron(A_BOLD);
     mvprintw(center_y-1, center_x-8, "Vous avez gagne !");
     attroff(A_BOLD);
-
     mvprintw(max_y-1, 10, "Appuyez sur n'importe quelle touche pour continuer...");
     getch();
     clear();
@@ -687,17 +940,22 @@ void victoire(){
     menuPrincipal();
 }
 
+/**
+* Defaite 
+* @author : Lemine Mahjoub
+* @brief Affiche un ecran de defaite, puis lance le menu principal
+* @param  g > grille : grille 
+* @return None
+*/
 void defaite(){
     clear();
     int max_x, max_y;
     getmaxyx(stdscr, max_y, max_x);
     int center_x = (max_x) / 2;
     int center_y = (max_y) / 2;
-
     attron(A_BOLD);
     mvprintw(center_y-1, center_x-8, "Vous avez perdu !");
     attroff(A_BOLD);
-
     mvprintw(max_y-1, 10, "Appuyez sur n'importe quelle touche pour continuer...");
     getch();
     clear();
@@ -705,59 +963,18 @@ void defaite(){
     menuPrincipal();
 }
 
-
-int estplacer(grille g, bloc b){
-    if(b.y + 2 > 14)
-        return 0;
-    if(b.tab[1][0] != 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+2].colonne[b.x+1] != 0))
-        return 0;
-    if (b.tab[1][0] != 0 && b.tab[1][1] == 0 && (g.ligne[b.y+2].colonne[b.x] != 0 || g.ligne[b.y+1].colonne[b.x+1] != 0))
-        return 0;
-    if (b.tab[1][0] == 0 && b.tab[1][1] != 0 && (g.ligne[b.y+2].colonne[b.x+1] != 0 || g.ligne[b.y+1].colonne[b.x] != 0))
-        return 0;
-
-    return 1;
-}
-
-void placerBloc(grille *g, bloc b){
-
-    if(g->ligne[b.y].colonne[b.x] == 0)
-        g->ligne[b.y].colonne[b.x] = b.tab[0][0];
-    if(g->ligne[b.y].colonne[b.x+1] == 0)
-        g->ligne[b.y].colonne[b.x+1] = b.tab[0][1];
-    if(g->ligne[b.y+1].colonne[b.x] == 0)
-        g->ligne[b.y+1].colonne[b.x] = b.tab[1][0];
-    if(g->ligne[b.y+1].colonne[b.x+1] == 0)
-        g->ligne[b.y+1].colonne[b.x+1] = b.tab[1][1];
-}
-
-
-void attenteDebut(){
-    clear();
-    int max_x, max_y;
-    getmaxyx(stdscr, max_y, max_x);
-    int center_x = (max_x) / 2;
-    int center_y = (max_y) / 2;
-    for(int i = 3; i > 0; i--){
-        clear();
-        attron(A_BOLD);
-        mvprintw(center_y, center_x, "%d", i);
-        attroff(A_BOLD);
-        refresh();
-        sleep(1);
-    }
-}
-
-
-
+/**
+* jeu
+* @author : Lemine Mahjoub
+* @brief Permet de lancer une partie, en creant une grille vide, puis en lancant la fonction jeu, qui vas generer un bloc aleatoire, l'afficher, puis recuperer les commandes utilisateur, placer le bloc, verifier si il est placer, si oui, on recommence, sinon, on change de bloc, on verifie si on a perdu ou gagner, puis on recommence recursivement
+* @param  *g > grille : grille  du jeu
+* @return None
+*/
 void jeu(grille *g){
-
     bloc bloc;
-
     generationBloc(&bloc); 
     affichage(*g, bloc); 
     while(estplacer(*g, bloc)){ 
-        
         commandeUtilisateur(&bloc, g); 
         placerBloc(g, bloc); 
         affichage(*g, bloc); 
@@ -765,12 +982,18 @@ void jeu(grille *g){
     changementBloc(g, &bloc); 
     conditionDefaite(*g);
     conditionVictoire(*g); 
-    
-
     jeu(g);
-
 }
 
+// =================================================================== //
+
+/**
+* main
+* @author : Lemine Mahjoub
+* @brief Lance le menu principal
+* @param  None
+* @return int : 0
+*/
 int main() {
     menuPrincipal();
     return 0;
