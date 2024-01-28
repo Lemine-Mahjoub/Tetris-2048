@@ -395,9 +395,6 @@ void afficherGrille(grille g){
     for(int i = 0; i < 10; i++){
         start_color();
         init_pair(10, COLOR_RED, COLOR_BLACK);
-
-
-
         attron(COLOR_PAIR(10));
         mvprintw(2, center_x-25+i*6,"x-----x");
         mvprintw(3, center_x-25+i*6,"|  %d  |", i);
@@ -412,76 +409,53 @@ void afficherGrille(grille g){
     for(int i = 0; i < 15; i++){
         for(int j = 0; j < 10; j++){
             int valeur = g.ligne[i].colonne[j];
+            start_color();
+            init_pair(1, COLOR_GREEN, COLOR_GREEN);
+            init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
+            init_pair(3, COLOR_BLUE, COLOR_BLUE);
+            init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
+            init_pair(5, COLOR_CYAN, COLOR_CYAN);
+            init_pair(6, COLOR_BLACK, COLOR_WHITE);
 
-            if(valeur != 0){
-                start_color();
-                init_pair(1, COLOR_GREEN, COLOR_GREEN);
-                init_pair(2, COLOR_YELLOW, COLOR_YELLOW);
-                init_pair(3, COLOR_BLUE, COLOR_BLUE);
-                init_pair(4, COLOR_MAGENTA, COLOR_MAGENTA);
-                init_pair(5, COLOR_CYAN, COLOR_CYAN);
-                init_pair(6, COLOR_BLACK, COLOR_WHITE);
-                if(valeur == 2 || valeur == 64){
-                    attron(COLOR_PAIR(1));
-                }
-                if (valeur == 4 || valeur == 128){
-                    attron(COLOR_PAIR(2));
-                }
-                if (valeur == 8 || valeur == 256){
-                    attron(COLOR_PAIR(3));
-                }
-                if (valeur == 16 || valeur == 512){
-                    attron(COLOR_PAIR(4));
-                }
-                if (valeur == 32 || valeur == 1024){
-                    attron(COLOR_PAIR(5));
-                }
-                if(valeur == 2048){
-                    attron(COLOR_PAIR(6));
-                }
+            if(valeur == 2 || valeur == 64)
+                attron(COLOR_PAIR(1));
+            if (valeur == 4 || valeur == 128)
+                attron(COLOR_PAIR(2));
+            if (valeur == 8 || valeur == 256)
+                attron(COLOR_PAIR(3));
+            if (valeur == 16 || valeur == 512)
+                attron(COLOR_PAIR(4));
+            if (valeur == 32 || valeur == 1024)
+                attron(COLOR_PAIR(5));
+            if(valeur == 2048)
+                attron(COLOR_PAIR(6));
 
-            }
-            if (valeur < 10){
-                
-                mvprintw(k, center_x-25+j*6,"x-----x");
+
+            mvprintw(k, center_x-25+j*6,"x-----x");
+            
+            if (valeur < 10)
                 mvprintw(k+1, center_x-25+j*6,"|  %i  |", valeur);
-                mvprintw(k+2, center_x-25+j*6,"x-----x");
-            }
-            else if(valeur < 100){
-                mvprintw(k, center_x-25+j*6,"x-----x");
+            else if(valeur < 100)
                 mvprintw(k+1, center_x-25+j*6,"|  %i |", valeur);
-                mvprintw(k+2, center_x-25+j*6,"x-----x");
-            }
-            else if(valeur < 1000){
-                mvprintw(k, center_x-25+j*6,"x-----x");
+            else if(valeur < 1000)
                 mvprintw(k+1, center_x-25+j*6,"| %i |", valeur);
-                mvprintw(k+2, center_x-25+j*6,"x-----x");
-            }
-            else{
-                mvprintw(k, center_x-25+j*6,"x-----x");
+            else
                 mvprintw(k+1, center_x-25+j*6,"|%i |", valeur);
-                mvprintw(k+2, center_x-25+j*6,"x-----x");
-            }
-            if(valeur != 0){
-                if(valeur == 2 || valeur == 64){
-                    attroff(COLOR_PAIR(1));
-                }
-                if (valeur == 4 || valeur == 128){
-                    attroff(COLOR_PAIR(2));
-                }
-                if (valeur == 8 || valeur == 256){
-                    attroff(COLOR_PAIR(3));
-                }
-                if (valeur == 16 || valeur == 512){
-                    attroff(COLOR_PAIR(4));
-                }
-                if (valeur == 32 || valeur == 1024){
-                    attroff(COLOR_PAIR(5));
-                }
-                if(valeur == 2048){
-                    attroff(COLOR_PAIR(6));
-                }
-            }
+            mvprintw(k+2, center_x-25+j*6,"x-----x");
+
+            if(valeur == 2 || valeur == 64)
+                attroff(COLOR_PAIR(1));
+            if (valeur == 4 || valeur == 128)
+                attroff(COLOR_PAIR(2));
+            if (valeur == 8 || valeur == 256)
+                attroff(COLOR_PAIR(3));
+            if (valeur == 16 || valeur == 512)
+                attroff(COLOR_PAIR(4));
+            if (valeur == 32 || valeur == 1024)
+                attroff(COLOR_PAIR(5));
+            if(valeur == 2048)
+                attroff(COLOR_PAIR(6));
+            
         }
         
         mvprintw(k+10, center_x-25+10*6,"\n");
@@ -493,7 +467,7 @@ void afficherGrille(grille g){
 
 void commandeUtilisateur(bloc *b, grille *g){
 
-    int choix = getch();
+    
     if(b->tab[0][0] != 0)
         g->ligne[b->y].colonne[b->x] = 0;
     if(b->tab[0][1] != 0)
@@ -502,13 +476,33 @@ void commandeUtilisateur(bloc *b, grille *g){
         g->ligne[b->y+1].colonne[b->x] = 0;
     if(b->tab[1][1] != 0)
         g->ligne[b->y+1].colonne[b->x+1] = 0;
+    
+    time_t debut, maintenant;
+    time(&debut);
+    timeout(1000);
+    nodelay(stdscr, TRUE);
+    int choix = getch();
+    while(choix == ERR && difftime(time(&maintenant), debut) < 1){
+        choix = getch();
+    }
 
-    // Debut chronometre on attend 1s
-
-
+    nodelay(stdscr, FALSE);
+    if(choix == ERR ){
+        if(b->y <= 12){
+            if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y+2].colonne[b->x] != 0 && g->ligne[b->y+2].colonne[b->x] == 0){
+                b->y = b->y + 1;
+            }
+            else if(b->tab[1][0] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x+1] == 0)){
+                b->y = b->y + 1;
+            }
+            else if(b->tab[1][1] != 0 && (g->ligne[b->y+2].colonne[b->x] == 0 || g->ligne[b->y+1].colonne[b->x] == 0)){
+                b->y = b->y + 1;
+            }
+            
+        }
+        return;
+    }
     switch (choix) {
-
-
         case KEY_DOWN:
             if(b->y <= 12){
                 if(b->tab[1][0] != 0 && b->tab[1][1] != 0 && g->ligne[b->y+2].colonne[b->x] != 0 && g->ligne[b->y+2].colonne[b->x] == 0){
@@ -560,8 +554,6 @@ void commandeUtilisateur(bloc *b, grille *g){
         default:
             break;
     }
-    
-    
 }
 
 void changementBloc(grille *g, bloc *b){
@@ -754,8 +746,9 @@ void attenteDebut(){
         refresh();
         sleep(1);
     }
-
 }
+
+
 
 void jeu(grille *g){
 
