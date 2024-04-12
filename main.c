@@ -14,7 +14,7 @@
 
 /**
 * Menu Principal 
-* @author Sarah Barlatier
+* @author 
 * @brief Permet d'afficher un menu principal navigable, puis appelle une fonction pour faire les choix
 * @param None
 * @return None
