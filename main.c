@@ -14,7 +14,6 @@
 
 /**
 * Menu Principal 
-* @author 
 * @brief Permet d'afficher un menu principal navigable, puis appelle une fonction pour faire les choix
 * @param None
 * @return None
@@ -102,7 +101,6 @@ void menuPrincipal() {
 
 /**
 * choix menu principal
-* @author Sarah Barlatier
 * @brief Permet de recuperer un entier choix, et a partir de ce choix lancer une fonction, 1: Nouvelle Partie, 2: Charger Partie, 3: Regles, 4: Quitter
 * @param choix --> int : Choix de l'utilisateur 
 * @return None
@@ -130,7 +128,6 @@ void choixMenuPrincipal(int choix) {
 
 /**
 * Nouvelle Partie
-* @author : Sarah Barlatier
 * @brief Permet de lancer une nouvelle partie, en creant une grille vide, puis en lancant la fonction jeu
 * @param  None
 * @return Aucun
@@ -147,7 +144,6 @@ void nouvellePartie(){
 
 /**
 * Charger Partie
-* @author : Sarah Barlatier
 * @brief Permet de lancer une charger partie, en verifiant d'abord si le fichier existe, puis initialisant le fichier dans une grille, puis en lancant la fonction jeu
 * @param  None
 * @return Aucun
@@ -207,7 +203,6 @@ void chargerPartie(){
 
 /**
 * Attente Debut
-* @author : Sarah Barlatier
 * @brief Permet d'attendre 3 secondes, avant de lancer une partie
 * @param  None
 * @return Aucun
@@ -231,7 +226,6 @@ void attenteDebut(){
 
 /**
 * Regles du Jeu
-* @author : Sarah Barlatier
 * @brief Permet de lancer une nouvelle partie, en creant une grille vide, puis en lancant la fonction jeu
 * @param  None
 * @return Aucun
@@ -288,7 +282,6 @@ void quitter(){
 
 /**
 * fichier existe ?
-* @author : Fabrice Gerbaud
 * @brief Permet verifier si un fichier existe a l'aide d'un nom de fichier
 * @param  nom > char : Nom du fichier
 * @return int : 1 si le fichier existe, 0 sinon
@@ -307,7 +300,6 @@ int fichierExiste(char nom[50]) {
 
 /**
 * charger grille 
-* @author : Fabrice Gerbaud
 * @brief Permet de remplir une grille a l'aide d'un fichier
 * @param  nom > char : Nom du fichier, 
 * @param  g > grille : Grille a remplir
@@ -339,7 +331,6 @@ void chargerGrille(char nom[50], grille *g) {
 }
 /**
 * Sauvegarder Grille
-* @author : Fabrice Gerbaud
 * @brief Permet de Sauvegarder une grille dans un fichier, attention : on ajoute de base l'extension txt a la fin de ce fichier
 * @param  g > grille : grille de valeur a sauvegarder
 * @return None
@@ -381,7 +372,6 @@ void sauvegarderGrille(grille g) {
 
 /**
 * Grille Vide
-* @author : Lemine Mahjoub
 * @brief Permet de remplir une grille de 0
 * @param  *g > grille : grille a remplir
 * @return None
@@ -396,7 +386,6 @@ void grilleVide(grille *g){
 
 /**
 * Generation Bloc
-* @author : Lemine Mahjoub
 * @brief Permet de creer un nouveau bloc aleatoire avec des valeurs initialiser a 2, 4, 8 ou 16 et une forme aleatoire
 * @param  *nouveauBloc > bloc : bloc aleatoire
 * @return None
@@ -446,7 +435,6 @@ void generationBloc(bloc *nouveauBloc){
 
 /**
 * estplacer
-* @author : Lemine Mahjoub
 * @brief  Permet de verifier si un bloc est placer dans la grille
 * @param  g > grille : grille 
 * @param  bloc > bloc : bloc 
@@ -467,7 +455,6 @@ int estplacer(grille g, bloc b){
 
 /**
 * Affichage
-* @author : Lemine Mahjoub
 * @brief Appelle les fonctions d'affichage de la grille, du bloc et des commandes
 * @param  g > grille : grille a afficher
 * @param  bloc > bloc : bloc a afficher
@@ -490,7 +477,6 @@ void affichage(grille g, bloc bloc){
 
 /**
 * Affichage Bloc
-* @author : Lemine Mahjoub
 * @brief Permet d'afficher un bloc a l'ecran
 * @param  bloc > bloc : bloc a afficher
 * @return None
@@ -548,7 +534,6 @@ void affichageBloc(bloc bloc){
 
 /**
 * Affichage Commande
-* @author : Lemine Mahjoub
 * @brief Permet d'afficher les commandes a l'ecran
 * @param  None
 * @return None
@@ -565,7 +550,6 @@ void affichageCommande(){
 
 /**
 * Affichage Grille
-* @author : Lemine Mahjoub
 * @brief Permet d'afficher la grile a l'ecran
 * @param  g > grille : grille a afficher
 * @return None
@@ -639,7 +623,6 @@ void afficherGrille(grille g){
 
 /**
 * Commande Utilisateur
-* @author : Lemine Mahjoub
 * @brief Permet de recuperer les commandes utilisateur et de bouger le bloc en fonction de ces commandes, si le temps (initialiser a 1 seconde) est depasse, le bloc descend d'une case
 * @param  *b > bloc : bloc a bouger
 * @param  *g > grille : grille a modifier
@@ -738,7 +721,6 @@ void commandeUtilisateur(bloc *b, grille *g){
 
 /**
 * Placer Bloc
-* @author : Lemine Mahjoub
 * @brief Permet de placer un bloc dans la grille
 * @param  b > bloc : bloc a bouger
 * @param  *g > grille : grille a modifier
@@ -757,7 +739,6 @@ void placerBloc(grille *g, bloc b){
 
 /**
 * Changement Bloc
-* @author : Lemine Mahjoub
 * @brief Permet de verifier si au moins 4 bloc de meme valeurs ce touche, si c'est le cas, on fusionne les blocs en un seul bloc de multiplier par 2 que l'on place tout en bas a gauche possible, puis on applique une graviter pour le faire tomber le plus bas possible
 * @param  *b > bloc : bloc a bouger
 * @param  *g > grille : grille a modifier
@@ -786,7 +767,6 @@ void changementBloc(grille *g, bloc *b){
 
 /**
 * Bloc Autour
-* @author : Lemine Mahjoub
 * @brief Permet de calculer recursivement le nombre de bloc autour d'un bloc
 * @param  g > grille : grille
 * @param  x > int : position x du bloc
@@ -816,7 +796,6 @@ int blocAutour(grille g, int x, int y, int pasverif, int compteur, int valeur){
 
 /**
 * Gravite Grille
-* @author : Lemine Mahjoub
 * @brief Permet de faire tomber un bloc le plus bas possible
 * @param  *g > grille : grille a modifier
 * @param  x > int : position x du bloc
@@ -834,7 +813,6 @@ void graviteGrille(grille *g, int x, int y){
 
 /**
 * Bon Bloc
-* @author : Lemine Mahjoub
 * @brief Permet de donner les cocordonnees du bloc le plus en bas a gauche possible
 * @param  g > grille : grille 
 * @param  x > int : position x du bloc
@@ -861,7 +839,6 @@ bloc bonBloc(grille g, int i, int j){
 
 /**
 * deforestage Grille
-* @author : Lemine Mahjoub
 * @brief Permet de detruire tout les bloc ayant la meme valeur que le bloc en parametre et etant a coter de ce bloc recursivement
 * @param  *g > grille : grille a modifier
 * @param  i > int : position x du bloc
@@ -887,7 +864,6 @@ void deforestageGrille(grille *g, int i, int j){
 
 /**
 * condition Victoire 
-* @author : Lemine Mahjoub
 * @brief Permet de verifier si un bloc de valeur 2048 existe, si oui, on lance la fonction victoire
 * @param  g > grille : grille 
 * @return None
@@ -904,7 +880,6 @@ void conditionVictoire(grille g){
 
 /**
 * condition Defaite 
-* @author : Lemine Mahjoub
 * @brief Permet de verifier si un bloc ne peut plus descendre, si oui, on lance la fonction defaite
 * @param  g > grille : grille 
 * @return None
@@ -919,7 +894,6 @@ void conditionDefaite(grille g){
 
 /**
 * Victoire 
-* @author : Lemine Mahjoub
 * @brief Affiche un ecran de victoire, puis lance le menu principal
 * @param  g > grille : grille 
 * @return None
@@ -942,7 +916,7 @@ void victoire(){
 
 /**
 * Defaite 
-* @author : Lemine Mahjoub
+* @author : Lemine Majoub
 * @brief Affiche un ecran de defaite, puis lance le menu principal
 * @param  g > grille : grille 
 * @return None
@@ -965,7 +939,6 @@ void defaite(){
 
 /**
 * jeu
-* @author : Lemine Mahjoub
 * @brief Permet de lancer une partie, en creant une grille vide, puis en lancant la fonction jeu, qui vas generer un bloc aleatoire, l'afficher, puis recuperer les commandes utilisateur, placer le bloc, verifier si il est placer, si oui, on recommence, sinon, on change de bloc, on verifie si on a perdu ou gagner, puis on recommence recursivement
 * @param  *g > grille : grille  du jeu
 * @return None
@@ -989,7 +962,6 @@ void jeu(grille *g){
 
 /**
 * main
-* @author : Lemine Mahjoub
 * @brief Lance le menu principal
 * @param  None
 * @return int : 0
